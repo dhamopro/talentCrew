@@ -1,0 +1,19 @@
+/* CityComboBox.module.css */
+.container {
+    /* Your specific styles here */
+    margin: 20px;
+    max-width: 300px;
+  }
+  
+  .autocomplete {
+    /* Styles for the Autocomplete component if needed */
+  }
+  
+  .textField {
+    /* Styles for the TextField if needed */
+  }
+  
+  .selectedCity {
+    margin-top: 10px;
+    font-weight: bold;
+  }

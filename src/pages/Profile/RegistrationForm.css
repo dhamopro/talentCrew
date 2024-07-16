@@ -1,0 +1,77 @@
+/* RegistrationForm.css */
+
+.registration-container {
+    #max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .registration-container h2 {
+    text-align: center;
+   #margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-group button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .form-group button:hover {
+    background-color: #0056b3;
+  }
+
+  .column {
+    float: left;
+    width: 25%;
+    padding: 10px;
+    #height: 300px; /* Should be removed. Only for demonstration */
+  }
+  
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  .heading {
+    text-decoration-line: underline;
+    background-color: rgb(179, 215, 247);;
+    font-weight: bold;
+  }
+
+  .logOutBtn {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 5px 5px 15px 1px #7d7d7d48;
+    /* background-color: #e3f2fd; */
+    cursor: pointer;
+  }

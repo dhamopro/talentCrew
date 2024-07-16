@@ -1,0 +1,63 @@
+/* Form.css */
+.react-tabs {
+    --tab-color: #333;
+    --tab-bg: #f0f0f0;
+    --tab-border: #ccc;
+    --tab-highlight: #666;
+    --tab-active-bg: #fff;
+    --tab-active-color: #000;
+  }
+  
+  .react-tabs__tab-list {
+    border-bottom: 1px solid var(--tab-border);
+    margin: 0 0 10px;
+    padding: 0;
+  }
+  
+  .react-tabs__tab {
+    display: inline-block;
+    border: 1px solid var(--tab-border);
+    border-bottom: none;
+    bottom: -1px;
+    position: relative;
+    list-style: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: var(--tab-color);
+    background-color: var(--tab-bg);
+  }
+  
+  .react-tabs__tab--selected {
+    background-color: var(--tab-active-bg);
+    border-color: var(--tab-border) var(--tab-border) var(--tab-active-bg);
+    color: var(--tab-active-color);
+    border-radius: 5px 5px 0 0;
+  }
+  
+  .react-tabs__tab--disabled {
+    color: var(--tab-highlight);
+    cursor: default;
+  }
+  
+  .react-tabs__tab:focus {
+    outline: none;
+  }
+  
+  .react-tabs__tab:focus:after {
+    content: "";
+    position: absolute;
+    height: 5px;
+    left: -4px;
+    right: -4px;
+    bottom: -5px;
+    background: #fff;
+  }
+  
+  .react-tabs__tab-panel {
+    display: none;
+    padding: 10px;
+  }
+  
+  .react-tabs__tab-panel--selected {
+    display: block;
+  }
