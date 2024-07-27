@@ -11,7 +11,8 @@ const RecordsList = ({ collectionName, onSelectedId }) => {
 
   useEffect(() => {
     const fetchRecords = async () => {
-      const pb = new PocketBase('http://139.59.90.114');
+      const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
+     // new PocketBase('https://pb.talentcrew.tekishub.com');
       
       try {
         const resultList = await pb.collection('Candidate').getList(1, 50, {

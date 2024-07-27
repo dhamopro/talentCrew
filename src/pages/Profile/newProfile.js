@@ -7,19 +7,21 @@ import CityComboBox1 from "./MaterialDropdown";
 import ComboBoxGeneric from "./MaterialDropGdown";
 import PocketBase from 'pocketbase';
 import skillsetPocketBase from "./MaterialDropdownPocketBase";
-import ComboBoxPB from "./comboBox copy";
+import ComboBoxPB from "./comboBoxS";
 import RecordsComponent from "./RecordsManagement";
 import RecordsList from "./Records";
 import RecordsList1 from "./AllRecords";
 import { useHistory } from 'react-router-dom';
 import EditRecord3 from "./Edit3";
 import moment from 'moment';
+import ComboBoxM from "./comboBoxM";
+import { isFieldValuePresent } from "./Util";
 
 
 
 const NewProfile = () => {
   
-  const pb = new PocketBase('http://139.59.90.114');
+  const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
 
   const [lavendar, setLavender] = useState('lavendar');
   const [gender, setGender] = useState('');
@@ -35,7 +37,8 @@ const NewProfile = () => {
   const [sourceNames, setSourceNames] = useState([]);
   const [prefJobs, setPrefJobs] = useState([]);
   const [preferredJobs, setPreferredJobs] = useState([]);
-  
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const [formData, setFormData] = useState({
     candidateId: '',
@@ -71,7 +74,10 @@ const NewProfile = () => {
     sourceType: '',
     sourceName: '',
     preferredJob: '72q88tva6us0sys',
-    candidatePicture: ''
+    candidatePicture: '',
+    jobOpenType:'External',
+    uanNo:'uan',
+    comments:'comments'
   });
 
 
@@ -88,9 +94,12 @@ const NewProfile = () => {
   const handleSelectedId = async (selectedId) => {
    // setEducation(newCompanies);
     console.log(selectedId);
-    const record = await pb.collection('Candidate').getOne(selectedId, {
+    const record1 = await pb.collection('Candidate').getOne(selectedId, {
       expand: 'skill_set,location, preffered_location, source_type, source_name, preffered_job, current_organisation',
     });
+    const record = await pb.collection('Candidate').getOne(selectedId, {
+          });
+
     console.log(record.expand);
     record.id='123';
 
@@ -105,6 +114,12 @@ const NewProfile = () => {
 
     const formatteExpiryDate = moment(record.expiry_date).format("YYYY-MM-DD");
     record.expiry_date = formatteExpiryDate;
+
+    //const experience = await pb.collection('Experience').getFirstListItem(`candidate.id="${selectedId}"`);
+    //record.companies = experience;
+    
+    //const education = await pb.collection('Education').getList(`candidate.id="${selectedId}"`);
+    //record.education = education
 
     setSelectedCandidate(record);
     setMode('Edit');
@@ -271,11 +286,52 @@ useEffect(() => {
      console.log('onChildDpValueChange');
    };
 
-   const handlePrefLocChange = (location, e) => {
-     setPrefLoc(location);
+   const handlePrefLocChange = (locations, e) => {
+     //setPrefLoc(locations.map(location => location.id));
+
+     console.log(locations);
+     const prefLocation1 = locations
+  ? locations
+      .filter(location => location !== null) // Filter out null values
+      .map(location => location.id) // Extract the id values
+  : [];
+
      console.log('PrefLocationchange');
-     console.log(location);
+     console.log(prefLocation1);
+     setPrefLoc(prefLocation1);
    };
+
+
+   const handlePriSkillChange = (skills, e) => {
+    //setPrefLoc(locations.map(location => location.id));
+
+    console.log(skills);
+    const prefLocation1 = skills
+ ? skills
+     .filter(skill => skill !== null) // Filter out null values
+     .map(skill => skill.id) // Extract the id values
+ : [];
+
+    console.log('PrefLocationchange');
+    console.log(prefLocation1);
+    setPrimarySkillSets(prefLocation1);
+  };
+
+
+  const handleSecSkillChange = (skills, e) => {
+    //setPrefLoc(locations.map(location => location.id));
+
+    console.log(skills);
+    const prefLocation1 = skills
+ ? skills
+     .filter(skill => skill !== null) // Filter out null values
+     .map(skill => skill.id) // Extract the id values
+ : [];
+
+    console.log('PrefLocationchange');
+    console.log(prefLocation1);
+    setSecondarySkillSets(prefLocation1);
+  };
 
    const handleSourceTypeChange = (sourceType, e) => {
     console.log('sourcetypechange');
@@ -293,7 +349,7 @@ useEffect(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
-    //if (Object.keys(validationErrors).length === 0) {
+    if (Object.keys(validationErrors).length === 0) {
       // Submit form data
       
       //formData.companies=companies;
@@ -339,44 +395,48 @@ useEffect(() => {
         "source_name": formData.sourceName,
         "candidate_picture":image,
         "preffered_job": preferredJobs,
-        "resume":resume
+        "resume":resume,
+        "uan_number":formData.uan_number,
+        "comments":formData.comments
     };
 
       const record = await pb.collection('Candidate').create(data);
       console.log(record.id)
 
-      const experiencePromises = companies.map(exp => 
+     /* const experiencePromises = companies.map(exp => 
         pb.collection('experience').create({
           candidate: record.id,
           company: exp.companyName,
           designation: exp.designation,
+          jobType:exp.jobType,
+          payroll:exp.payroll,
+          location:exp.location,
           //position: exp.position,
-          //startDate: exp.startDate,
-          //endDate: exp.endDate,
-          //description: exp.description,
+          startDate: exp.startDate,
+          endDate: exp.endDate,
+          //description: exp.description,         
         })
       );
 
-      const experienceRecords = await Promise.all(experiencePromises);  
+      const experienceRecords = await Promise.all(experiencePromises); */ 
       
       const educationPromises = education.map(education => 
         pb.collection('education').create({
           candidate: record.id,
           course: education.degree,
           grade: education.score,
-          //position: exp.position,
-          //startDate: exp.startDate,
-          //endDate: exp.endDate,
-          //description: exp.description,
+          collegeName: education.institution,
+         // from: education.ye,
+          to : education.yearOfPassing,
         })
       );
       
       const educationRecords = await Promise.all(educationPromises);  
 
 
-    /*} else {
+    } else {
       setErrors(validationErrors);
-    }*/
+    }
   };
 
   const handleInputChange = (e) => {
@@ -432,7 +492,7 @@ useEffect(() => {
   };
 
 
-  const validateForm = () => {
+  const validateForm =  () => {
     const errors = {};
 
     // First Name validation
@@ -468,8 +528,17 @@ useEffect(() => {
       errors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = 'Invalid email format';
+    } else {
+      //setIsLoading(true);
+      /*const  isExist = await isFieldValuePresent('candidate','email',formData.email)
+      //isFieldValuePresent('candidate','email',formData.email));
+      console.log(formData.email);
+      //if(isExist){
+      errors.email =  isExist + formData.email;
+      //}
+     // setIsLoading(false);
+      */
     } 
-
 
     // currentLocation validation
     /*if (!formData.currentLocation.trim()) {
@@ -489,9 +558,9 @@ useEffect(() => {
         errors.prefLocation = 'prefLocation is required';
       }
 
-      if (!prefLoc.trim()) {
-        errors.prefLocation = 'prefLocation is required';
-      } 
+     // if (!prefLoc.trim()) {
+      //  errors.prefLocation = 'prefLocation is required';
+      //} 
 
         // currentLocation validation
         if (!formData.currentOrganization.trim()) {
@@ -509,12 +578,25 @@ useEffect(() => {
           errors.noticePeriod = 'noticePeriod is required';
         }
 
-        
-
         if (!formData.totExp.trim()) {
           errors.totExp = 'totExp is required';
-        } 
+        } else {
+
+          if (Number(formData.totExp) > 100 && Number(formData.totExp) >= 0) {
+            errors.totExp = 'Total Experience is should be less than 100';
+          }
+
+        }
         
+        if (!formData.relExp.trim()) {
+          errors.relExp = 'relExp is required';
+        } else {
+
+          if (Number(formData.relExp) > 100 && Number(formData.relExp) >= 0) {
+            errors.relExp = 'Relevant Experience is should be less than 100';
+          }
+
+        }
 
         if (!formData.issueDate.trim()) {
           errors.issueDate = 'issueDate is required';
@@ -588,12 +670,14 @@ useEffect(() => {
   return (
    
     <div className="registration-container">
-    <button onClick={showCreate} >Create</button>
+    {mode === 'List' && <button onClick={showCreate} >Create</button>}
     {mode === 'Edit' &&  <EditRecord3 candidate = {selectedCandidate} handleCancel={handleCancel} />}
     {mode === 'Create' &&  
 
     <form onSubmit={handleSubmit}>
-      
+      <div className="row heading">
+        <label className='heading'>Personal Details</label>
+      </div>
       <div className="row">
       <div className="form-group column">
         <label htmlFor="candidateId">Candidate ID:</label>
@@ -608,17 +692,9 @@ useEffect(() => {
 
 
       </div>
-      
-      <div className="form-group column">
-      <label htmlFor="linkedInId">LinkedIn ID:</label>
-        <input
-          type="text"
-          id="linkedInId"
-          name="linkedInId"
-          value={formData.linkedInId}
-          onChange={handleInputChange}
-        />
-      </div>
+      <div className="form-group column"></div>
+      <div className="form-group column"></div>
+
       <div className="form-group column">
         <label htmlFor="createdDate">Created Date:</label>
         <input
@@ -629,21 +705,7 @@ useEffect(() => {
           onChange={handleInputChange}
         />
       </div>
-      <div className="form-group column">
-        <label htmlFor="documentUpload">Picture Upload:</label>
-        <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          //onChange={handleInputChange}
-          onChange={(e) => setImage(e.target.files[0])}
-        />
-      </div>
-      </div>
-      <div className="row heading">
-        <label htmlFor="candidateId" className='heading'>Basic Info</label>
-      </div>
-      <div className="row">
+     
       <div className="form-group column">
         <label htmlFor="firstName">First Name*:</label>
         <input
@@ -659,14 +721,14 @@ useEffect(() => {
          {errors.firstName && <span style={{ color: 'red' }}>{errors.firstName}</span>}
       </div>
       <div className="form-group column">
-        <label htmlFor="middleName">Middle Name*:</label>
+        <label htmlFor="middleName">Middle Name:</label>
         <input
           type="text"
           id="middleName"
           name="middleName"
           value={formData.middleName}
           onChange={handleInputChange}
-          required
+          
           style={{ borderColor: errors.middleName ? 'red' : '' }}
           />
            {errors.middleName && <span style={{ color: 'red' }}>{errors.middleName}</span>}
@@ -690,8 +752,9 @@ useEffect(() => {
           type="text"
           id="displayName"
           name="displayName"
-          value={formData.displayName}
+          value={formData.firstName +' '+ formData.middleName +' '+ formData.lastName}
           onChange={handleInputChange}
+          readOnly
         />
       </div>
       </div>
@@ -745,7 +808,26 @@ useEffect(() => {
       </div>
       </div>
       <div className="row">
-
+      <div className="form-group column">
+        <label htmlFor="docNo">PAN No:</label>
+        <input
+          type="text"
+          id="docNo"
+          name="docNo"
+          value={formData.docNo}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div className="form-group column">
+        <label htmlFor="docNo">UAN No:</label>
+        <input
+          type="text"
+          id="uanNo"
+          name="uanNo"
+          value={formData.uanNo}
+          onChange={handleInputChange}
+        />
+      </div>
       <div className="form-group column">
         <label htmlFor="dob">DOB*:</label>
         <input
@@ -771,6 +853,13 @@ useEffect(() => {
           <option value="Female">Female</option>
         </select>   
       </div>
+
+      </div>
+      <div className="row heading">
+        <label htmlFor="candidateId" className='heading'>Skill Details</label>
+      </div>
+      <div className="row">
+      
       <div className="form-group column">
         <label htmlFor="primarySkillSets">Primary Skill Sets*:</label>
        
@@ -784,25 +873,25 @@ useEffect(() => {
           <option value="python">python</option>
           <option value="javascript">javascript</option>
   </select>*/}
-        <select
+        {/*<select
           id="primarySkillSets"
           value={primarySkillSets}
           onChange={handlePrimarySkillS}
           multiple
-        >
+        >*/}
           {/*{skillsData.map((skill) => (
             <option key={skill.code} value={skill.code}>
               {skill.name}
             </option>
           ))}*/}
 
-          {skillSet && skillSet.map((skill) => (
+          {/*{skillSet && skillSet.map((skill) => (
             <option key={skill.id} value={skill.id}>
               {skill.name}
             </option>
           ))}
-        </select>
-
+        </select>*/}
+        <ComboBoxM id="2" collection={'SkillSets'}  onChildDpValueChange={handlePriSkillChange} />
       </div>
       <div className="form-group column">
         <label htmlFor="secondarySkillSets">Secondary Skill Sets*:</label>
@@ -818,29 +907,44 @@ useEffect(() => {
           <option value="javascript">javascript</option>
   </select>*/}
 
-        <select
+      {/* <select
           id="secondarySkillSets"
           value={secondarySkillSets}
           onChange={handleSecondarySkillS}
           multiple
-        >
+        >*/}
           {/*{skillsData.map((skill) => (
             <option key={skill.code} value={skill.code}>
               {skill.name}
             </option>
           ))}*/}
-          {skillSet && skillSet.map((skill) => (
+          {/*{skillSet && skillSet.map((skill) => (
             <option key={skill.id} value={skill.id}>
               {skill.name}
             </option>
           ))}
-        </select>
+        </select>*/}
+
+        <ComboBoxM id="2" collection={'SkillSets'}  onChildDpValueChange={handleSecSkillChange} />
+  
+
       </div>
+
+      
+      <div className="form-group column">
+        <label htmlFor="totExp">Tot Exp*:</label>
+        <input
+          type="text"
+          id="totExp"
+          name="totExp"
+          value={formData.totExp}
+          onChange={handleInputChange}
+          required
+          style={{ borderColor: errors.totExp ? 'red' : '' }}
+          />
+           {errors.totExp && <span style={{ color: 'red' }}>{errors.totExp}</span>}
       </div>
-      <div className="row heading">
-        <label htmlFor="candidateId">Experience Info</label>
-      </div>
-      <div className="row">
+
       <div className="form-group column">
         <label htmlFor="relExp">Rel Exp*:</label>
         <input
@@ -853,47 +957,6 @@ useEffect(() => {
           style={{ borderColor: errors.middleName ? 'red' : '' }}
           />
            {errors.relExp && <span style={{ color: 'red' }}>{errors.relExp}</span>}
-      </div>
-      <div className="form-group column">
-        <label htmlFor="currentLocation">Current Location*:</label>
-        {/*<input
-          type="text"
-          id="currentLocation"
-          name="currentLocation"
-          value={formData.currentLocation}
-          onChange={handleInputChange}
-          required
-        />*
-        <CityComboBox1 id="1" onChildValueChange={handleChild1ValueChange}/>*/}
-        <ComboBoxPB id="1" collection={'location'} onChildDpValueChange={handleChildLocationChange} />
-      </div>
-      <div className="form-group column">
-        <label htmlFor="prefLocation">Pref Location*:</label>
-        {/*<input
-          type="text"
-          id="prefLocation"
-          name="prefLocation"
-          value={formData.prefLocation}
-          onChange={handleInputChange}
-          required
-        />
-        <CityComboBox1 id="2" onChildValueChange={handleChild2ValueChange}/>*/}
-        <ComboBoxPB id="2" collection={'location'} onChildDpValueChange={handlePrefLocChange} />
-
-      </div>
-      <div className="form-group column">
-      <label htmlFor="currentOrganization">Current Organization*:</label>
-        <input
-          type="text"
-          id="currentOrganization"
-          name="currentOrganization"
-          value={formData.currentOrganization}
-          onChange={handleInputChange}
-          required
-          style={{ borderColor: errors.currentOrganization ? 'red' : '' }}
-          />
-           {errors.currentOrganization && <span style={{ color: 'red' }}>{errors.currentOrganization}</span>}
-      
       </div>
       </div>
       <div className="row">
@@ -924,6 +987,34 @@ useEffect(() => {
            {errors.expectedCtc && <span style={{ color: 'red' }}>{errors.expectedCtc}</span>}
       </div>
       <div className="form-group column">
+        <label htmlFor="currentLocation">Current Location*:</label>
+        {/*<input
+          type="text"
+          id="currentLocation"
+          name="currentLocation"
+          value={formData.currentLocation}
+          onChange={handleInputChange}
+          required
+        />*
+        <CityComboBox1 id="1" onChildValueChange={handleChild1ValueChange}/>*/}
+        <ComboBoxPB id="1" collection={'location'} multiple={false} onChildDpValueChange={handleChildLocationChange} />
+      </div>
+      <div className="form-group column">
+        <label htmlFor="prefLocation">Pref Location*:</label>
+        {/*<input
+          type="text"
+          id="prefLocation"
+          name="prefLocation"
+          value={formData.prefLocation}
+          onChange={handleInputChange}
+          required
+        />
+        <CityComboBox1 id="2" onChildValueChange={handleChild2ValueChange}/>*/}
+        <ComboBoxM id="2" collection={'location'}  onChildDpValueChange={handlePrefLocChange} />
+
+      </div>
+      <div className="row">
+      <div className="form-group column">
         <label htmlFor="noticePeriod">Notice Period*:</label>
         <input
           type="text"
@@ -938,22 +1029,105 @@ useEffect(() => {
            {errors.noticePeriod && <span style={{ color: 'red' }}>{errors.noticePeriod}</span>}
       </div>
       <div className="form-group column">
-        <label htmlFor="totExp">Tot Exp*:</label>
-        <input
+        <label htmlFor="preferredJob">Preferred Job:</label>
+        {/*<input
           type="text"
-          id="totExp"
-          name="totExp"
-          value={formData.totExp}
+          id="preferredJob"
+          name="preferredJob"
+          value={formData.preferredJob}
           onChange={handleInputChange}
-          required
-          style={{ borderColor: errors.totExp ? 'red' : '' }}
-          />
-           {errors.totExp && <span style={{ color: 'red' }}>{errors.totExp}</span>}
+        />*/}
+        <select
+          id="preferredJob"
+          name="preferredJob"
+          value={preferredJobs}
+          onChange={handlePreferredJob}
+          multiple
+        >
+          {/*{skillsData.map((skill) => (
+            <option key={skill.code} value={skill.code}>
+              {skill.name}
+            </option>
+          ))}*/}
+          {prefJobs && prefJobs.map((job) => (
+            <option key={job.id} value={job.id}>
+              {job.name}
+            </option>
+          ))}
+        </select>
+
+
+
       </div>
+      <div className="form-group column">
+        <label>Job Open Type:</label>
+      
+        <select
+                            id="jobOpenType"
+                            name="jobOpenType"
+                            value={formData.jobOpenType}
+                            onChange={handleInputChange}
+                            multiple
+                            style={{ borderColor: errors.jobOpenType ? 'red' : 'inherit' }}
+                        >
+                            <option value="internal">Internal</option>
+                            <option value="external">External</option>
+                        </select>
+      </div>
+      <div className="form-group column">
+      <label htmlFor="resumeUpload">Resume Upload*:</label>
+        <input
+          type="file"
+          id="resumeUpload"
+          name="resumeUpload"
+          onChange={(e) => setResume(e.target.files[0])}
+          required
+        />
+      </div>
+      </div>
+      </div>
+    {/*
+      <div className="row heading heading">
+        <label>Education Info</label>
+      </div>
+      <div className="row" style={{borderWidth: 2,backgroundColor:'lavendar'}}>
+       <EducationForm  education= {education} onEducationChange={handleEducationChange} />
       </div>
       
+      <div className="row heading heading">
+        <label>Employment History</label>
+      </div>
+      <div className="row" style={{borderWidth: 2,backgroundColor:'lavendar'}}>
+       <ExperienceForm companies={companies} onCompaniesChange={handleCompaniesChange}/>
+       
+      </div> 
+     
+       */}
+      <div className="row heading">
+        <label htmlFor="candidateId">Experience Info</label>
+      </div>
       <div className="row">
-      <div className="form-group column">
+     {/* <div className="form-group column">
+      <label htmlFor="currentOrganization">Current Organization*:</label>
+        <input
+          type="text"
+          id="currentOrganization"
+          name="currentOrganization"
+          value={formData.currentOrganization}
+          onChange={handleInputChange}
+          required
+          style={{ borderColor: errors.currentOrganization ? 'red' : '' }}
+          />
+           {errors.currentOrganization && <span style={{ color: 'red' }}>{errors.currentOrganization}</span>}
+      
+      </div>
+      
+    
+      
+      </div>*/}
+     
+     
+      {/*<div className="form-group column">
         <label htmlFor="documentType">Document Type:</label>
 
         <select
@@ -967,60 +1141,8 @@ useEffect(() => {
           <option value="visa">visa</option>
           <option value="other">other</option>
         </select>
-      </div>
-      <div className="form-group column">
-        <label htmlFor="docNo">Doc No:</label>
-        <input
-          type="text"
-          id="docNo"
-          name="docNo"
-          value={formData.docNo}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="form-group column">
-        <label htmlFor="issueDate">Issue Date:</label>
-        <input
-          type="date"
-          id="issueDate"
-          name="issueDate"
-          value={formData.issueDate}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="form-group column">
-        <label htmlFor="expiryDate">Expiry Date:</label>
-        <input
-          type="date"
-          id="expiryDate"
-          name="expiryDate"
-          value={formData.expiryDate}
-          onChange={handleInputChange}
-        />
-      </div>
-      
-      
-      <div className="form-group column">
-        <label htmlFor="documentUpload">Document Upload:</label>
-        <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="form-group column">
-      <label htmlFor="resumeUpload">Resume Upload*:</label>
-        <input
-          type="file"
-          id="resumeUpload"
-          name="resumeUpload"
-          onChange={(e) => setResume(e.target.files[0])}
-          required
-        />
-      </div>
-      </div>
-      <div className="row">
+      </div>*/}
+         
       <div className="form-group column">
         <label htmlFor="sourceType">Source Type*:</label>
         
@@ -1070,69 +1192,57 @@ useEffect(() => {
           ))}
         </select>
       </div>
-      <div className="form-group column">
-        <label htmlFor="preferredJob">Preferred Job:</label>
-        {/*<input
-          type="text"
-          id="preferredJob"
-          name="preferredJob"
-          value={formData.preferredJob}
-          onChange={handleInputChange}
-        />*/}
-        <select
-          id="preferredJob"
-          name="preferredJob"
-          value={preferredJobs}
-          onChange={handlePreferredJob}
-          multiple
-        >
-          {/*{skillsData.map((skill) => (
-            <option key={skill.code} value={skill.code}>
-              {skill.name}
-            </option>
-          ))}*/}
-          {prefJobs && prefJobs.map((job) => (
-            <option key={job.id} value={job.id}>
-              {job.name}
-            </option>
-          ))}
-        </select>
-
-
-
-      </div>
+      
       {/*<div className="form-group column">
         <label htmlFor="preferredJob">Preferred Job:</label>
         <CityComboBox1/>
       </div>*/}
+
+        <div className="form-group column">
+        <label htmlFor="documentUpload">Picture Upload:</label>
+        <input
+          type="file"
+          id="documentUpload"
+          name="documentUpload"
+          //onChange={handleInputChange}
+          onChange={(e) => setImage(e.target.files[0])}
+        />
+      </div>
       <div className="form-group column">
-        
-       {/*<StyleComboBox/>*/}
-        </div>
+      <label htmlFor="linkedInId">LinkedIn ID:</label>
+        <input
+          type="text"
+          id="linkedInId"
+          name="linkedInId"
+          value={formData.linkedInId}
+          onChange={handleInputChange}
+        />
       </div>
+      </div>
+      <div className="row">
+                  
+                  <label htmlFor="comments">Comments</label>
+                  <textarea
+                      id="comments"
+                      name="comments"
+                      value={formData.comments}
+                      onChange={handleInputChange}
+                      maxLength={3000}
+                      style={{width:'100%'}} rows={5}
+                  />
 
-      <div className="row heading heading">
-        <label>Employment History</label>
-      </div>
-      <div className="row" style={{borderWidth: 2,backgroundColor:'lavendar'}}>
-       <ExperienceForm companies={companies} onCompaniesChange={handleCompaniesChange}/>
-       
-      </div> 
-     
-      <div className="row heading heading">
-        <label>Education Info</label>
-      </div>
-      <div className="row" style={{borderWidth: 2,backgroundColor:'lavendar'}}>
-       <EducationForm  education= {education} onEducationChange={handleEducationChange} />
-      </div> 
+              {/* Job Type */}
+          </div>
+
       <div className="row" style={{padding: 10}}>
-       
-      </div>  
-      <div className="form-group" style={{backgroundColor:'lavendar', textAlign: 'center'}}>
-        <button type="submit" >Save</button>
+      <div className="form-group column"></div>
+      <div className="form-group column"><button type="submit" >Save</button></div>
+      <div className="form-group column" style={{backgroundColor:'lavendar', textAlign: 'center'}}>
         <button onClick={handleCancel}>Cancel</button>
-
        </div>  
+       <div className="form-group column"></div>
+      </div>  
+
      
     </form>
     }

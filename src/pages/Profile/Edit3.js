@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PocketBase from 'pocketbase';
-import ComboBoxPB from './comboBox copy';
+import ComboBoxPB from './comboBoxS';
 
 const EditRecord3 = ({candidate, handleCancel}) => {
   const { collectionName, id } = useParams();

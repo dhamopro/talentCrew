@@ -55,6 +55,7 @@ const ComboBoxGeneric = ({ id, onChildValueChange, rfield, ifield  }) => {
       getOptionLabel={(option) => option.value}
       options={options}
       loading={loading}
+      multiple
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
         handleChangeCity(newInputValue);

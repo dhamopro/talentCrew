@@ -396,7 +396,9 @@ const RegistrationForm = () => {
     <div className="registration-container">
    
     <form onSubmit={handleSubmit}>
-      
+    <div className="row heading">
+        <label className='heading'>Requirement Details</label>
+      </div>
       <div className="row">
       <div className="form-group column">
         <label htmlFor="candidateId">Candidate ID:</label>
