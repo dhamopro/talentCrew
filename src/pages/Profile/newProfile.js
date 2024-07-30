@@ -102,7 +102,7 @@ const NewProfile = () => {
     preferredJob: '72q88tva6us0sys',
     candidatePicture: '',
     jobOpenType:'External',
-    uanNo:'UAN',
+    uanNo:123,
     comments:'comments'
   });
 
@@ -1015,7 +1015,7 @@ useEffect(() => {
       <div className="form-group column">
         <label htmlFor="docNo">UAN No:</label>
         <input
-          type="text"
+          type="number"
           id="uanNo"
           name="uanNo"
           value={formData.uanNo}
@@ -1174,7 +1174,7 @@ useEffect(() => {
       <div className="form-group column">
         <label htmlFor="currentCtc">Current CTC*:</label>
         <input
-          type="text"
+          type="number"
           id="currentCtc"
           name="currentCtc"
           value={formData.currentCtc}
@@ -1187,7 +1187,7 @@ useEffect(() => {
       <div className="form-group column">
         <label htmlFor="expectedCtc">Expected CTC*:</label>
         <input
-          type="text"
+          type="number"
           id="expectedCtc"
           name="expectedCtc"
           value={formData.expectedCtc}
