@@ -67,7 +67,7 @@ const NewProfile = () => {
 
   const [formData, setFormData] = useState({
     candidateId: '',
-    createdDate: '2024-01-15',
+    createdDate: new Date().toISOString().split('T')[0],
     firstName: 'First',
     middleName: 'Middle',
     lastName: 'Last',
@@ -721,9 +721,12 @@ useEffect(() => {
           errors.relExp = 'relExp is required';
         } else {
 
+          if (Number(formData.totExp) < Number(formData.relExp) ) {
+            errors.relExp = 'Relevant Experience is should be less';
+          }
           if (Number(formData.relExp) > 100 && Number(formData.relExp) >= 0) {
             errors.relExp = 'Relevant Experience is should be less than 100';
-          }
+          } 
 
         }
 
@@ -1468,7 +1471,7 @@ useEffect(() => {
       <div className="form-group column" style={{backgroundColor:'lavendar', textAlign: 'center'}}>
         <button onClick={handleCancel}>Cancel</button>
         
-        <button onClick={validateForm}>Validate</button>
+        {/*<button onClick={validateForm}>Validate</button>*/}
        </div>  
        <div className="form-group column"></div>
       </div>  
