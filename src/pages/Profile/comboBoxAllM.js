@@ -6,7 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 
 
-const ComboBoxPB = ({id, collection, onChildDpValueChange, defaultV, isMultiple}) => {
+const ComboBoxAllM = ({id, collection, onChildDpValueChange, defaultV, isMultiple}) => {
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
@@ -20,7 +20,7 @@ const ComboBoxPB = ({id, collection, onChildDpValueChange, defaultV, isMultiple}
   const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
 
   useEffect(() => {
-    if (inputValue.length >= 1) {
+    if (inputValue.length >= 0) {
       fetchOptions(inputValue);
     } else {
       setOptions([]);
@@ -121,7 +121,7 @@ const ComboBoxPB = ({id, collection, onChildDpValueChange, defaultV, isMultiple}
       options={options}
       loading={loading}
       onChange={handleOnChange}
-      multiple={isMultiple}
+      multiple
       onInputChange={(event, newInputValue) => {
 
         setInputValue(newInputValue);
@@ -146,4 +146,4 @@ const ComboBoxPB = ({id, collection, onChildDpValueChange, defaultV, isMultiple}
   );
 };
 
-export default ComboBoxPB;
+export default ComboBoxAllM;

@@ -129,6 +129,7 @@ const ComboBoxM = ({id, collection, onChildDpValueChange, defaultV, isMultiple})
       }}
       renderInput={(params) => (
         <TextField 
+        freeSolo
           {...params}
           InputProps={{
             ...params.InputProps,

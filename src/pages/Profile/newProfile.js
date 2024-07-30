@@ -16,10 +16,35 @@ import EditRecord3 from "./Edit3";
 import moment from 'moment';
 import ComboBoxM from "./comboBoxM";
 import { isFieldValuePresent } from "./Util";
+import ComboBoxN from "./comboBoxN";
+import SuggestionComponent from "./Paper";
+
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Select from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
+import ComboBoxAll from "./comboBoxAll";
+import ComboBoxAllM from "./comboBoxAllM";
 
 
 
 const NewProfile = () => {
+
+  const names = [
+    'Oliver Hansen',
+    'Van Henry',
+    'April Tucker',
+    'Ralph Hubbard',
+    'Omar Alexander',
+    'Carlos Abbott',
+    'Miriam Wagner',
+    'Bradley Wilkerson',
+    'Virginia Andrews',
+    'Kelly Snyder',
+  ];
   
   const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
 
@@ -56,9 +81,9 @@ const NewProfile = () => {
     secondarySkillSets: [],
     currentCtc: '12',
     expectedCtc: '14',
-    noticePeriod: '15 days',
-    totExp: '15',
-    relExp: '10',
+    noticePeriod: '',
+    totExp: '',
+    relExp: '',
     currentLocation: '',
     prefLocation: '',
     dob: '2004-01-15',
@@ -68,6 +93,7 @@ const NewProfile = () => {
     resumeUpload: '',
     documentType: 'passport',
     docNo: '12345',
+    panNo: 'PAN',
     issueDate: '2013-01-15',
     expiryDate: '2014-01-18',
     documentUpload: '',
@@ -76,7 +102,7 @@ const NewProfile = () => {
     preferredJob: '72q88tva6us0sys',
     candidatePicture: '',
     jobOpenType:'External',
-    uanNo:'uan',
+    uanNo:'UAN',
     comments:'comments'
   });
 
@@ -281,6 +307,22 @@ useEffect(() => {
     setPreferredJobs(value);
   };
 
+  const handleRelExp = (value) => {
+    
+    setFormData({
+      ...formData,
+      ['relExp']: value
+    });
+  };
+  
+  const handleTotExp = (value) => {
+    
+    setFormData({
+      ...formData,
+      ['totExp']: value
+    });
+  };
+
   const onChildDpValueChange = (newCompanies) => {
     // setEducation(newCompanies);
      console.log('onChildDpValueChange');
@@ -333,7 +375,7 @@ useEffect(() => {
     setSecondarySkillSets(prefLocation1);
   };
 
-   const handleSourceTypeChange = (sourceType, e) => {
+   const handleSourceTypeChange = (sourceType) => {
     console.log('sourcetypechange');
     console.log(sourceType);
     //const { name, value } = e.target;
@@ -345,7 +387,62 @@ useEffect(() => {
     formData.sourceType = sourceType;
     console.log(formData);
   };
+
+  const handleSourceNameChange = (SourceName) => {
+    console.log('sourcetypechange');
+    console.log(SourceName);
+    //const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      ['sourceName']: SourceName
+    });
+
+    formData.sourceName = SourceName;
+    console.log(formData);
+  };
+
+  
    
+  const handlePreferredJobChange = (preferrdJob, e) => {
+    console.log('preferrdJob');
+    console.log(preferrdJob);
+    //const { name, value } = e.target;
+    setPreferredJobs(preferrdJob);
+  };
+
+  const handleJobOpenChange = (jobOpenType) => {
+    console.log('sourcetypechange');
+    console.log(jobOpenType);
+    //jobOpenType
+
+    setFormData({
+      ...formData,
+      ['jobOpenType']: jobOpenType
+    });
+  };
+
+
+  const handleNoticePeriodChange = (noticePeriod) => {
+    console.log('sourcetypechange');
+    console.log(noticePeriod);
+    //jobOpenType
+
+    setFormData({
+      ...formData,
+      ['noticePeriod']: noticePeriod
+    });
+  };
+  
+  
+
+  const handleGenderChange = (value) => {
+    
+    setFormData({
+      ...formData,
+      ['gender']: value
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
@@ -440,7 +537,7 @@ useEffect(() => {
   };
 
   const handleInputChange = (e) => {
-    const validationErrors = validateForm();
+    const validationErrors = []; //validateForm();
     if (Object.keys(validationErrors).length === 0) {
       // Submit form data
       console.log(formData);
@@ -453,6 +550,22 @@ useEffect(() => {
       ...formData,
       [name]: value
     });
+  };
+
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB in bytes
+
+    if (selectedFile && selectedFile.size > maxSizeInBytes) {
+      const errors = {};
+      errors.file = 'File size should not be greater than 1 MB';
+      setErrors(errors);
+      setResume(null);
+    } else {
+      //setError('');
+      setResume(selectedFile);
+    }
   };
 
   
@@ -492,7 +605,13 @@ useEffect(() => {
   };
 
 
-  const validateForm =  () => {
+  //const validateForm =  (e) => {
+
+    //e.preventDefault();
+    const validateForm =  () => {
+
+
+
     const errors = {};
 
     // First Name validation
@@ -540,22 +659,28 @@ useEffect(() => {
       */
     } 
 
-    // currentLocation validation
-    /*if (!formData.currentLocation.trim()) {
-      errors.currentLocation = 'currentLocation is required';
-    } else {
-      errors.currentLocation = '';
-    }
+
+    if (!formData.panNo.trim()) {
+      errors.panNo = 'PAN is required';
+    } 
+
+    
+    if (!formData.uanNo.trim()) {
+      errors.uanNo = 'UAN is required';
+    } 
 
     // currentLocation validation
-    if (!formData.prefLocation.trim()) {
-      errors.prefLocation = 'prefLocation is required';
-    } else {
-      errors.prefLocation = '';
-    }*/
+    if (!loc.trim()) {
+      errors.currentLocation = 'currentLocation is required';
+    } 
+
+    // currentLocation validation
+    if (prefLoc.length === 0) {
+      errors.prefLoc = 'prefLocation is required';
+    } 
 
       if (!loc.trim()) {
-        errors.prefLocation = 'prefLocation is required';
+        errors.loc = 'Location is required';
       }
 
      // if (!prefLoc.trim()) {
@@ -570,12 +695,16 @@ useEffect(() => {
         
 
         if (!formData.currentCtc.trim()) {
-          errors.currentCtc = 'currentCtc is required';
+          errors.currentCtc = 'CurrentCtc is required';
+        } 
+
+        if (!formData.expectedCtc.trim()) {
+          errors.expectedCtc = 'ExpectedCtc is required';
         } 
         
 
         if (!formData.noticePeriod.trim()) {
-          errors.noticePeriod = 'noticePeriod is required';
+          errors.noticePeriod = 'NoticePeriod is required';
         }
 
         if (!formData.totExp.trim()) {
@@ -617,6 +746,24 @@ useEffect(() => {
         if (!formData.sourceName.trim()) {
           errors.sourceName = 'sourceName is required';
         } 
+
+        if (!formData.gender.trim()) {
+          errors.gender = 'Gender is required';
+        } 
+        
+        if (primarySkillSets.length ===0) {
+          errors.primary = 'Primary skill is required';
+        } 
+
+        if (secondarySkillSets.length ===0) {
+          errors.secondary = 'Secondary skill is required';
+        } 
+
+        if (preferredJobs.length ===0) {
+          errors.prefJobs = 'PreferredJobs is required';
+        } 
+        
+
     /*if (!formData.dob.trim()) {
       //errors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -632,6 +779,8 @@ useEffect(() => {
       errors.email = 'Invalid email format';
     }*/
     // Add more validation rules for other fields
+
+    setErrors(errors);
 
     return errors;
   };
@@ -666,6 +815,27 @@ useEffect(() => {
     setMode('Create')
   };
   
+  const [personName, setPersonName] = useState([]);
+
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setPersonName(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
+
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: 48 * 4.5 + 8,
+        width: 250,
+      },
+    },
+  };
+
 
   return (
    
@@ -689,8 +859,26 @@ useEffect(() => {
           placeholder="Auto Generated"
           readOnly
         />
-
-
+{/*
+<Select
+          labelId="demo-multiple-checkbox-label"
+          id="demo-multiple-checkbox"
+          multiple
+          value={personName}
+          onChange={handleChange}
+          input={<OutlinedInput label="Tag" />}
+          size="3"
+          renderValue={(selected) => selected.join(', ')}
+          MenuProps={MenuProps}
+        >
+          {names.map((name) => (
+            <MenuItem key={name} value={name}>
+              <Checkbox checked={personName.indexOf(name) > -1} />
+              <ListItemText primary={name} />
+            </MenuItem>
+          ))}
+        </Select>
+          */}
       </div>
       <div className="form-group column"></div>
       <div className="form-group column"></div>
@@ -704,6 +892,7 @@ useEffect(() => {
           value={formData.createdDate}
           onChange={handleInputChange}
         />
+       {/*<ComboBoxN />*/}
       </div>
      
       <div className="form-group column">
@@ -812,11 +1001,13 @@ useEffect(() => {
         <label htmlFor="docNo">PAN No:</label>
         <input
           type="text"
-          id="docNo"
-          name="docNo"
-          value={formData.docNo}
+          id="panNo"
+          name="panNo"
+          value={formData.panNo}
           onChange={handleInputChange}
+          style={{ borderColor: errors.uanNo ? 'red' : '' }}
         />
+        {errors.panNo && <span style={{ color: 'red' }}>{errors.panNo}</span>}
       </div>
       <div className="form-group column">
         <label htmlFor="docNo">UAN No:</label>
@@ -826,7 +1017,10 @@ useEffect(() => {
           name="uanNo"
           value={formData.uanNo}
           onChange={handleInputChange}
+          style={{ borderColor: errors.uanNo ? 'red' : '' }}
         />
+
+        {errors.uanNo && <span style={{ color: 'red' }}>{errors.uanNo}</span>}
       </div>
       <div className="form-group column">
         <label htmlFor="dob">DOB*:</label>
@@ -843,7 +1037,7 @@ useEffect(() => {
       </div>
       <div className="form-group column">
         <label htmlFor="gender">Gender*:</label>
-        <select size='3'
+        {/*<select size='3'
           id="gender"
           value={gender}
           name="gender"
@@ -851,7 +1045,13 @@ useEffect(() => {
         >
           <option value="Male">Male</option>
           <option value="Female">Female</option>
-        </select>   
+        </select>  */}
+
+        <ComboBoxAll id="2" collection={'gender'} onChildDpValueChange={handleGenderChange}  
+        style={{ borderColor: errors.totExp ? 'red' : '' }} />
+
+        {errors.gender && <span style={{ color: 'red' }}>{errors.gender}</span>}
+
       </div>
 
       </div>
@@ -892,6 +1092,8 @@ useEffect(() => {
           ))}
         </select>*/}
         <ComboBoxM id="2" collection={'SkillSets'}  onChildDpValueChange={handlePriSkillChange} />
+
+        {errors.primary  && <span style={{ color: 'red' }}>{errors.primary}</span>}
       </div>
       <div className="form-group column">
         <label htmlFor="secondarySkillSets">Secondary Skill Sets*:</label>
@@ -926,14 +1128,14 @@ useEffect(() => {
         </select>*/}
 
         <ComboBoxM id="2" collection={'SkillSets'}  onChildDpValueChange={handleSecSkillChange} />
-  
-
+        
+        {errors.secondary  && <span style={{ color: 'red' }}>{errors.secondary}</span>}
       </div>
 
       
       <div className="form-group column">
         <label htmlFor="totExp">Tot Exp*:</label>
-        <input
+        {/*<input
           type="text"
           id="totExp"
           name="totExp"
@@ -941,13 +1143,16 @@ useEffect(() => {
           onChange={handleInputChange}
           required
           style={{ borderColor: errors.totExp ? 'red' : '' }}
-          />
+          />*/}
+          
+          <SuggestionComponent name="totExp" handleChange={handleTotExp}/>
+
            {errors.totExp && <span style={{ color: 'red' }}>{errors.totExp}</span>}
       </div>
 
       <div className="form-group column">
         <label htmlFor="relExp">Rel Exp*:</label>
-        <input
+        {/*<input
           type="text"
           id="relExp"
           name="relExp"
@@ -955,7 +1160,10 @@ useEffect(() => {
           onChange={handleInputChange}
           required
           style={{ borderColor: errors.middleName ? 'red' : '' }}
-          />
+          />*/}
+
+          <SuggestionComponent name="relExp" handleChange={handleRelExp}/>
+
            {errors.relExp && <span style={{ color: 'red' }}>{errors.relExp}</span>}
       </div>
       </div>
@@ -998,6 +1206,8 @@ useEffect(() => {
         />*
         <CityComboBox1 id="1" onChildValueChange={handleChild1ValueChange}/>*/}
         <ComboBoxPB id="1" collection={'location'} multiple={false} onChildDpValueChange={handleChildLocationChange} />
+        {errors.loc && <span style={{ color: 'red' }}>{errors.loc}</span>}
+
       </div>
       <div className="form-group column">
         <label htmlFor="prefLocation">Pref Location*:</label>
@@ -1011,12 +1221,12 @@ useEffect(() => {
         />
         <CityComboBox1 id="2" onChildValueChange={handleChild2ValueChange}/>*/}
         <ComboBoxM id="2" collection={'location'}  onChildDpValueChange={handlePrefLocChange} />
-
+        {errors.prefLoc && <span style={{ color: 'red' }}>{errors.prefLoc}</span>}
       </div>
       <div className="row">
       <div className="form-group column">
         <label htmlFor="noticePeriod">Notice Period*:</label>
-        <input
+        {/*<input
           type="text"
           id="noticePeriod"
           name="noticePeriod"
@@ -1024,8 +1234,10 @@ useEffect(() => {
           onChange={handleInputChange}
           required
           style={{ borderColor: errors.noticePeriod ? 'red' : '' }}
-          />
+          />*/}
           
+          <ComboBoxAll id="2" collection={'NoticePeriod'} onChildDpValueChange={handleNoticePeriodChange} />
+
            {errors.noticePeriod && <span style={{ color: 'red' }}>{errors.noticePeriod}</span>}
       </div>
       <div className="form-group column">
@@ -1037,32 +1249,34 @@ useEffect(() => {
           value={formData.preferredJob}
           onChange={handleInputChange}
         />*/}
-        <select
+        {/*<select
           id="preferredJob"
           name="preferredJob"
           value={preferredJobs}
           onChange={handlePreferredJob}
           multiple
         >
-          {/*{skillsData.map((skill) => (
+          {skillsData.map((skill) => (
             <option key={skill.code} value={skill.code}>
               {skill.name}
             </option>
-          ))}*/}
+          ))}
           {prefJobs && prefJobs.map((job) => (
             <option key={job.id} value={job.id}>
               {job.name}
             </option>
           ))}
-        </select>
+        </select>*/}
+        
+        <ComboBoxAll id="2" collection={'preffered_job'} onChildDpValueChange={handlePreferredJobChange} />
 
-
+        {errors.prefJobs && <span style={{ color: 'red' }}>{errors.prefJobs}</span>}
 
       </div>
       <div className="form-group column">
         <label>Job Open Type:</label>
       
-        <select
+        {/*<select
                             id="jobOpenType"
                             name="jobOpenType"
                             value={formData.jobOpenType}
@@ -1072,7 +1286,13 @@ useEffect(() => {
                         >
                             <option value="internal">Internal</option>
                             <option value="external">External</option>
-                        </select>
+                        </select>     */}           
+
+                        <ComboBoxAll id="2" collection={'jobopentype'} onChildDpValueChange={handleJobOpenChange} />
+
+                        {errors.jobOpenType && <span style={{ color: 'red' }}>{errors.jobOpenType}</span>}
+
+               
       </div>
       <div className="form-group column">
       <label htmlFor="resumeUpload">Resume Upload*:</label>
@@ -1080,13 +1300,16 @@ useEffect(() => {
           type="file"
           id="resumeUpload"
           name="resumeUpload"
-          onChange={(e) => setResume(e.target.files[0])}
+          onChange={handleFileChange}
+          //{(e) => setResume(e.target.files[0])}
           required
         />
+        {errors.file && <span style={{ color: 'red' }}>{errors.file}</span>}
+
       </div>
       </div>
       </div>
-    {/*
+    
       <div className="row heading heading">
         <label>Education Info</label>
       </div>
@@ -1102,7 +1325,7 @@ useEffect(() => {
        
       </div> 
      
-       */}
+       
       <div className="row heading">
         <label htmlFor="candidateId">Experience Info</label>
       </div>
@@ -1172,7 +1395,7 @@ useEffect(() => {
           onChange={handleInputChange}
           required
         />*/}
-
+{/*
         <select
           id="sourceName"
           name="sourceName"
@@ -1180,17 +1403,22 @@ useEffect(() => {
           onChange={handleInputChange}
           
         >
-          {/*{skillsData.map((skill) => (
+          {skillsData.map((skill) => (
             <option key={skill.code} value={skill.code}>
               {skill.name}
             </option>
-          ))}*/}
+          ))}
           {sourceNames && sourceNames.map((source) => (
             <option key={source.id} value={source.id}>
               {source.name}
             </option>
-          ))}
-        </select>
+          ))} 
+        </select>*/}
+
+        <ComboBoxAll id="2" collection={'Source_name'} onChildDpValueChange={handleSourceNameChange} />
+
+       {/*<ComboBoxAllM id="2" collection={'Source_name'} onChildDpValueChange={handleSourceTypeChange} />
+*/}
       </div>
       
       {/*<div className="form-group column">
@@ -1239,6 +1467,8 @@ useEffect(() => {
       <div className="form-group column"><button type="submit" >Save</button></div>
       <div className="form-group column" style={{backgroundColor:'lavendar', textAlign: 'center'}}>
         <button onClick={handleCancel}>Cancel</button>
+        
+        <button onClick={validateForm}>Validate</button>
        </div>  
        <div className="form-group column"></div>
       </div>  
