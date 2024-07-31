@@ -904,7 +904,13 @@ useEffect(() => {
   return (
    
     <div className="registration-container">
-    {mode === 'List' && <button onClick={showCreate} >Create</button>}
+    {mode === 'List' && <div><button style={{ 
+            fontWeight: 'bold',
+            backgroundColor: 'blue',
+            color: 'white',
+            margin: 2 ,
+            width: '50%',
+          }} onClick={showCreate} >Create</button></div>}
     {mode === 'Edit' &&  <EditRecord3 candidate = {selectedCandidate} handleCancel={handleCancel} />}
     {mode === 'Create' &&  
 
