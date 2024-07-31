@@ -64,6 +64,13 @@ const NewProfile = () => {
   const [preferredJobs, setPreferredJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [errors, setErrors] = useState({});
+  const [dob, setDob] = useState({});
+  const [loc, setLoc] = useState('');
+  const [prefLoc, setPrefLoc] = useState('');
+  const [image, setImage] = useState(null);
+  const [resume, setResume] = useState(null);
+
 
   const [formData, setFormData] = useState({
     candidateId: '',
@@ -123,8 +130,7 @@ const NewProfile = () => {
     const record1 = await pb.collection('Candidate').getOne(selectedId, {
       expand: 'skill_set,location, preffered_location, source_type, source_name, preffered_job, current_organisation',
     });
-    const record = await pb.collection('Candidate').getOne(selectedId, {
-          });
+    const record = await pb.collection('Candidate').getOne(selectedId, {});
 
     console.log(record.expand);
     record.id='123';
@@ -283,15 +289,6 @@ useEffect(() => {
   }, [responseData]);*/
 
   
- 
-  const [errors, setErrors] = useState({});
-  const [dob, setDob] = useState({});
-  const [loc, setLoc] = useState('');
-  const [prefLoc, setPrefLoc] = useState('');
-  const [image, setImage] = useState(null);
-  const [resume, setResume] = useState(null);
-
-
   const handlePrimarySkillS = (e) => {
     const value = Array.from(e.target.selectedOptions, option => option.value);
     setPrimarySkillSets(value);
@@ -313,6 +310,9 @@ useEffect(() => {
       ...formData,
       ['relExp']: value
     });
+
+    errors.relExp = null;
+    setErrors(errors);
   };
   
   const handleTotExp = (value) => {
@@ -321,6 +321,9 @@ useEffect(() => {
       ...formData,
       ['totExp']: value
     });
+
+    errors.totExp = null;
+    setErrors(errors);
   };
 
   const onChildDpValueChange = (newCompanies) => {
@@ -341,6 +344,9 @@ useEffect(() => {
      console.log('PrefLocationchange');
      console.log(prefLocation1);
      setPrefLoc(prefLocation1);
+
+     errors.prefLocation = null;
+    setErrors(errors);
    };
 
 
@@ -357,6 +363,9 @@ useEffect(() => {
     console.log('PrefLocationchange');
     console.log(prefLocation1);
     setPrimarySkillSets(prefLocation1);
+
+    errors.primary = null;
+    setErrors(errors);
   };
 
 
@@ -373,6 +382,9 @@ useEffect(() => {
     console.log('PrefLocationchange');
     console.log(prefLocation1);
     setSecondarySkillSets(prefLocation1);
+
+    errors.secondary = null;
+    setErrors(errors);
   };
 
    const handleSourceTypeChange = (sourceType) => {
@@ -385,6 +397,10 @@ useEffect(() => {
     });
 
     formData.sourceType = sourceType;
+
+    errors.sourceType = null;
+    setErrors(errors);
+
     console.log(formData);
   };
 
@@ -399,6 +415,9 @@ useEffect(() => {
 
     formData.sourceName = SourceName;
     console.log(formData);
+
+    errors.SourceName = null;
+    setErrors(errors);
   };
 
   
@@ -408,6 +427,9 @@ useEffect(() => {
     console.log(preferrdJob);
     //const { name, value } = e.target;
     setPreferredJobs(preferrdJob);
+
+    errors.prefJobs = null;
+    setErrors(errors);
   };
 
   const handleJobOpenChange = (jobOpenType) => {
@@ -419,6 +441,8 @@ useEffect(() => {
       ...formData,
       ['jobOpenType']: jobOpenType
     });
+    errors.jobOpenType = null;
+    setErrors(errors);
   };
 
 
@@ -431,6 +455,8 @@ useEffect(() => {
       ...formData,
       ['noticePeriod']: noticePeriod
     });
+    errors.noticePeriod = null;
+    setErrors(errors);
   };
   
   
@@ -441,6 +467,9 @@ useEffect(() => {
       ...formData,
       ['gender']: value
     });
+
+    errors.gender = null;
+    setErrors(errors);
   };
 
   const handleSubmit = async (e) => {
@@ -536,6 +565,21 @@ useEffect(() => {
     }
   };
 
+  const handleNameChange = (event) => {
+    const newValue = event.target.value;
+    const capitalizedValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+    //setValue(capitalizedValue);
+
+    const { name, value } = event.target;
+
+    setFormData({
+      ...formData,
+      [name]: capitalizedValue
+    });
+
+    errors[name]=null;
+  };
+
   const handleInputChange = (e) => {
     const validationErrors = []; //validateForm();
     if (Object.keys(validationErrors).length === 0) {
@@ -546,10 +590,14 @@ useEffect(() => {
     }
 
     const { name, value } = e.target;
+    
     setFormData({
       ...formData,
       [name]: value
     });
+
+    errors[name] = null;
+
   };
 
 
@@ -558,13 +606,14 @@ useEffect(() => {
     const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB in bytes
 
     if (selectedFile && selectedFile.size > maxSizeInBytes) {
-      const errors = {};
+     // const errors = {};
       errors.file = 'File size should not be greater than 1 MB';
       setErrors(errors);
       setResume(null);
     } else {
       //setError('');
       setResume(selectedFile);
+      errors.file = null;
     }
   };
 
@@ -642,6 +691,14 @@ useEffect(() => {
       errors.phone = 'Phone number should be 10 digits';
     } 
 
+    if (formData.altPhone.trim() && !/^\d{10}$/.test(formData.altPhone)) {
+      errors.altPhone = 'Phone number should be 10 digits';
+    } 
+
+    if (formData.altEmail.trim() && !/\S+@\S+\.\S+/.test(formData.altEmail)) {
+      errors.altEmail = 'Invalid email format';
+    } 
+    
     // Email validation
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
@@ -662,12 +719,16 @@ useEffect(() => {
 
     if (!formData.panNo.trim()) {
       errors.panNo = 'PAN is required';
-    } 
+    } else {
+      if(!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panNo)){
+        errors.panNo = 'Invalid PAN';
+      }
+    }
 
-    
+    /*
     if (!formData.uanNo.trim()) {
       errors.uanNo = 'UAN is required';
-    } 
+    } */
 
     // currentLocation validation
     if (!loc.trim()) {
@@ -905,7 +966,7 @@ useEffect(() => {
           id="firstName"
           name="firstName"
           value={formData.firstName}
-          onChange={handleInputChange}
+          onChange={handleNameChange}
           placeholder="FirstName"
           required
           style={{ borderColor: errors.firstName ? 'red' : '' }}
@@ -919,7 +980,7 @@ useEffect(() => {
           id="middleName"
           name="middleName"
           value={formData.middleName}
-          onChange={handleInputChange}
+          onChange={handleNameChange}
           
           style={{ borderColor: errors.middleName ? 'red' : '' }}
           />
@@ -932,7 +993,7 @@ useEffect(() => {
           id="lastName"
           name="lastName"
           value={formData.lastName}
-          onChange={handleInputChange}
+          onChange={handleNameChange}
           required
           style={{ borderColor: errors.lastName ? 'red' : '' }}
           />
@@ -996,7 +1057,10 @@ useEffect(() => {
           name="altEmail"
           value={formData.altEmail}
           onChange={handleInputChange}
+          style={{ borderColor: errors.altPhone ? 'red' : '' }}
         />
+
+        {errors.altEmail && <span style={{ color: 'red' }}>{errors.altEmail}</span>}
       </div>
       </div>
       <div className="row">
@@ -1471,7 +1535,7 @@ useEffect(() => {
       <div className="form-group column" style={{backgroundColor:'lavendar', textAlign: 'center'}}>
         <button onClick={handleCancel}>Cancel</button>
         
-        {/*<button onClick={validateForm}>Validate</button>*/}
+        <button onClick={validateForm}>Validate</button>
        </div>  
        <div className="form-group column"></div>
       </div>  
