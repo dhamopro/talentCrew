@@ -1541,7 +1541,7 @@ useEffect(() => {
       <div className="form-group column" style={{backgroundColor:'lavendar', textAlign: 'center'}}>
         <button onClick={handleCancel}>Cancel</button>
         
-        <button onClick={validateForm}>Validate</button>
+        {/*<button onClick={validateForm}>Validate</button>*/}
        </div>  
        <div className="form-group column"></div>
       </div>  
