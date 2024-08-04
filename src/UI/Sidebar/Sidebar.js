@@ -63,6 +63,21 @@ const Sidebar = () => {
               <div className={styles.menuText}>Enity</div>
             </div>
           </Link>
+          <Link
+            to={"/register"}
+            className={`${styles.navItem}  ${isActive(
+              location.pathname,
+              "/register"
+            )}`}
+          >
+            {" "}
+            <div className={styles.menuDiv}>
+              <div className={styles.svgIcon}>
+              <ProfileIcon />
+              </div>
+              <div className={styles.menuText}>register</div>
+            </div>
+          </Link>
         </nav>
       </div>
     </div>
