@@ -11,6 +11,7 @@ import Login from "./pages/Login/Login";
 import Component2 from "./pages/Profile/Edit";
 import EditRecord from "./pages/Profile/Edit1";
 import EditRecord2 from "./pages/Profile/Edit2";
+import Registration from "./pages/Registration/Registration";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -21,6 +22,8 @@ root.render(
           <Route path='profile' element={<Profile />} />
           <Route path='entity' element={<About />} />
           <Route path='requirement' element={<Friends />} />
+          <Route path='register' element={<Registration />} />
+          
         </Route>
         <Route path='/edit1' element={<Component2 />}>
         </Route>
