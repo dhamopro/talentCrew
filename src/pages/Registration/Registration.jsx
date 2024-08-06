@@ -401,13 +401,30 @@ const Registration = (props) => {
   };
 
   const initFormData = {
-    skills: [{ skillName: "", skillLevel: "" }],
+    skills: [{ skillName: "", skillLevel: "", skillRating:"" }],
     employs: [{ company: "", jobType: "", payRoll: "", designation: "", empFrom: "01/01/2024", empTo: "01/01/2024" }],
     education: [{ degree: "", subject: "", institution: "", university: "", cpga: "", passOut:"" }],
+    certs: [{ certName: "", certNo: "", certDate: "" }],
+
     firstName: "",
+    middleName: "",
     lastName: "",
-    gender: "",
+    displayName: "",
+    phone:"",
+    altPhone:"",
+    email:"",
+    altEmail:"",
     dob: "",
+    gender: "",
+    panNo:"",
+    uanNo:"",
+    totExp:"",
+    relExp:"",
+    currCTC:"",
+    expCTC:"",
+    currLoc:"",
+    prefLoc:[],
+    noticePeriod:"",
     nationality: "",
     mobileNumber: "",
     email: "",
@@ -421,6 +438,7 @@ const Registration = (props) => {
     prefDays: [],
     prefTime: [],
     interests: [],
+    prefJob:[],
     qualification: "",
     affiliation: "",
     empStatus: "",
@@ -428,6 +446,7 @@ const Registration = (props) => {
     reference: "",
     consent: false,
     skillSet:[],
+    validate:"",
   };
 
   const [formData, setFormData] = useState(initFormData);
@@ -449,6 +468,16 @@ const Registration = (props) => {
   const [institution, setInstitution] = useState([]);
 
   const [university, setUniversity] = useState([]);
+
+  const [location, setLocation] = useState([]);
+
+  const [noticePeriod, setNoticePeriod] = useState([]);
+
+  const [PrefJob, setPrefJob] = useState([]);
+
+  
+  const [errors, setErrors] = useState({});
+
 
   
   const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
@@ -594,6 +623,53 @@ const Registration = (props) => {
       }
     };
 
+    const fetchLocation = async () => {
+      try {
+        console.log('fetchPayroll');
+        // you can also fetch all records at once via getFullList
+      const records = await pb.collection('Location').getFullList({
+        sort: '-created',
+      });
+       
+      setLocation(records);
+      console.log(records);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    
+    const fetchNoticePeriod = async () => {
+      try {
+        console.log('fetchPayroll');
+        // you can also fetch all records at once via getFullList
+      const records = await pb.collection('NoticePeriod').getFullList({
+        sort: '-created',
+      });
+       
+      setNoticePeriod(records);
+      console.log(records);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchPrefJob = async () => {
+      try {
+        console.log('fetchPayroll');
+        // you can also fetch all records at once via getFullList
+      const records = await pb.collection('preffered_job').getFullList({
+        sort: '-created',
+      });
+       
+      setPrefJob(records);
+      console.log(records);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchPrefJob();
     fetchSkillSet();
     fetchDesignation();
     fetchOrganisation();
@@ -603,6 +679,8 @@ const Registration = (props) => {
     fetchSubject();
     fetchUniversity();
     fetchInstitution();
+    fetchLocation();
+    fetchNoticePeriod();
   }, []); 
 
   const [nav, setNav] = useState(0);
@@ -615,7 +693,7 @@ const Registration = (props) => {
 
   const handleChange = (event, count = 0) => {
     // console.log(event, "check this");
-    const { name, value } = event.target;
+    const { name, value, placeholder } = event.target;
     if (name === "skillName" || name === "skillLevel") {
       const updatedSkills = [...formData.skills];
       updatedSkills[count][name] = value;
@@ -651,12 +729,23 @@ const Registration = (props) => {
       return;
     }
 
+    if (name === "certName" || name === "certNo" || name === "certDate" ) {
+      const updatedCerts = [...formData.certs];
+      updatedCerts[count][name] = value;
+      console.log("updated company", updatedCerts);
+      setFormData({
+        ...formData,
+        certs: updatedCerts,
+      });
+      return;
+    }
     
 
     setFormData({
       ...formData,
       [name]: value,
     });
+
   };
 
   const addSkill = () => {
@@ -683,6 +772,15 @@ const Registration = (props) => {
     setFormData({
       ...formData,
       education: updatedEdus,
+    });
+  };
+
+  const addCert = () => {
+    const updatedCerts = [...formData.certs];
+    updatedCerts.push({ certName: "", certNo: "", certDate: "" });
+    setFormData({
+      ...formData,
+      certs: updatedCerts,
     });
   };
 
@@ -713,6 +811,14 @@ const Registration = (props) => {
     });
   };
 
+  const removeCerts = (index) => {
+    const updatedCerts = [...formData.certs];
+    updatedCerts.splice(index, 1);
+    setFormData({
+      ...formData,
+      certs: updatedCerts,
+    });
+  };
   
   const validateFields = () => {
         
@@ -729,7 +835,9 @@ const Registration = (props) => {
       }
     }
 
-    return true;
+    //return true;
+    
+
   };
 
   // useEffect(() => {
@@ -762,6 +870,33 @@ const Registration = (props) => {
 
   const [ regStatus, setRegStatus ] = useState('')
 
+  
+  const validate = (event) => {
+
+    handleUANChange(event);
+    handlePANChange(event);
+    handleNameChange(event);
+    handlePhoneChange(event);
+    handleAltPhoneChange(event);
+    handleEmailChange(event);
+    handleAltEmailChange(event);
+    handleTotExpChange(event);
+    handleRelExpChange(event);
+    handleCurrCTCChange(event);
+    handleExpCTCChange(event);
+    handleCurrLocChange(event);
+    handlePrefLocChange(event);
+    handleNoticePeriodChange(event);
+    handlePrefJobChange(event);
+
+
+    console.log(errors);
+
+    if (!formData.gender.trim()){
+      errors.gender = 'Gender is required'; 
+    }
+  }
+
   const onsubmit = () => {
     if(validateFields()) {
     //   window.alert("Form submitted");
@@ -791,6 +926,306 @@ const Registration = (props) => {
     setNav(key);
   };
 
+  const handleUANChange = (event) => {
+    if (!formData.uanNo.trim()) {
+      errors.uanNo = 'uanNo is required';
+    } else
+      if(!/^[0-9]{12}$/.test(formData.uanNo)){
+        errors.uanNo = 'Invalid PAN';
+      
+    } else {
+      errors['uanNo']=null;
+    }
+
+    const { name, value } = event.target;
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    
+  };
+
+  const handlePANChange = (event) => {
+    if (!formData.panNo.trim()) {
+      errors.panNo = 'PAN is required';
+    } else if(!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panNo)){
+        errors.panNo = 'Invalid PAN';
+    } else {
+      errors['panNo']=null;
+    }
+
+    const { name, value } = event.target;
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+  };
+
+  const handleNameChange = (event) => {
+    if (!formData.firstName.trim()) {
+      errors.firstName = 'First name is required';
+    } else if (!/^[A-Z]/.test(formData.firstName)) {
+      errors.firstName = 'First name should start with a capital letter';  
+    }
+    const newValue = event.target.value;
+    const capitalizedValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+
+    const { name, value } = event.target;
+
+    setFormData({
+      ...formData,
+      [name]: capitalizedValue
+    });
+  
+      errors[name]=null;
+    };
+
+
+    const handlePhoneChange = (event) => {
+      if (!formData.phone.trim()) {
+        errors.phone = 'Phone number is required';
+  
+      } else if (!/^\d{10}$/.test(formData.phone)) {
+        errors.phone = 'Phone number should be 10 digits';  
+      }  else{
+        errors['phone']=null;
+      }
+  
+      const { name, value } = event.target;
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+
+      };
+
+      const handleAltPhoneChange = (event) => {
+
+        if (formData.altPhone.trim() && !/^\d{10}$/.test(formData.altPhone)) {
+          errors.altPhone = 'Phone number should be 10 digits';
+          } else {
+            errors['altPhone']=null;
+          }
+    
+        const { name, value } = event.target;
+
+        setFormData({
+          ...formData,
+          [name]: value
+        });
+    };
+    
+      
+    const handleEmailChange = (event) => {
+      /*if (formData.altEmail.trim() && !/\S+@\S+\.\S+/.test(formData.altEmail)) {
+        errors.altEmail = 'Invalid email format';  
+      } */
+      
+      if (!formData.email.trim()) {
+        errors.email = 'Email is required';  
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        errors.email = 'Invalid email format';
+      } else {
+        errors['email']=null;
+      }
+
+      const { name, value } = event.target;
+
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    
+    };
+
+    const handleAltEmailChange = (event) => {
+      if (formData.altEmail.trim() && !/\S+@\S+\.\S+/.test(formData.altEmail)) {
+        errors.altEmail = 'Invalid email format';  
+      } else {
+        errors['altEmail']=null;
+      }
+      
+      const { name, value } = event.target;
+
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    
+    };
+
+    const handleGenderChange = (event) => {
+
+      if (!formData.gender.trim()){
+        errors.gender = 'Gender is required'; 
+      } else {
+        errors['gender']=null;
+      }
+
+      const { name, value } = event.target;
+
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    
+    };
+
+    const handleDOBChange = (event) => {
+
+      if (!formData.dob.trim()){
+        errors.dob = 'DOB is required'; 
+      } else {
+        errors['dob']=null;
+      }
+
+      const { name, value } = event.target;
+
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+
+    };
+
+    const handleTotExpChange = (event) => {
+
+      if (!formData.totExp.trim()){
+        errors.totExp = 'Experience is required'; 
+      } else {
+        errors['totExp']=null;
+      }
+
+      const { name, value } = event.target;
+
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
+
+    const handleRelExpChange = (event) => {
+
+      if (!formData.relExp.trim()){
+        errors.relExp = 'Experience is required'; 
+      } else {
+        errors['relExp']=null;
+      }
+
+      const { name, value } = event.target;
+
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+
+    }
+
+    const handleCurrCTCChange = (event) => {
+
+      if (!formData.currCTC.trim()){
+        errors.currCTC = 'CTC is required'; 
+      } else {
+        errors['currCTC']=null;
+      }
+
+      const { name, value } = event.target;
+
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+
+};
+
+const handleExpCTCChange = (event) => {
+
+  if (!formData.expCTC.trim()){
+    errors.expCTC = 'CTC is required'; 
+  } else {
+    errors['expCTC']=null;
+  }
+
+  const { name, value } = event.target;
+
+  setFormData({
+    ...formData,
+    [name]: value
+  });
+
+};
+
+const handleCurrLocChange = (event) => {
+
+  if (formData.currLoc.length === 0){
+    errors.currLoc = 'Location is required'; 
+  } else {
+    errors['currLoc']=null;
+  }
+
+  const { name, value } = event.target;
+
+  setFormData({
+    ...formData,
+    [name]: value
+  });
+
+};
+
+
+const handlePrefLocChange = (event) => {
+
+  if (formData.prefLoc.length === 0){
+    errors.prefLoc = 'Location is required'; 
+  } else {
+    errors['prefLoc']=null;
+  }
+
+  const { name, value } = event.target;
+
+  setFormData({
+    ...formData,
+    [name]: value
+  });
+
+};
+
+const handleNoticePeriodChange = (event) => {
+
+  if (formData.noticePeriod.length === 0){
+    errors.noticePeriod = 'NP is required'; 
+  } else {
+    errors['noticePeriod']=null;
+  }
+
+  const { name, value } = event.target;
+
+  setFormData({
+    ...formData,
+    [name]: value
+  });
+
+};
+
+const handlePrefJobChange = (event) => {
+
+  if (formData.prefJob.length === 0){
+    errors.prefJob = 'Job is required'; 
+  } else {
+    errors['prefJob']=null;
+  }
+
+  const { name, value } = event.target;
+
+  setFormData({
+    ...formData,
+    [name]: value
+  });
+
+};
+
+
+
   return (
     <div>
     { (!regStatus) &&
@@ -809,10 +1244,9 @@ const Registration = (props) => {
           <span>Starts @10 AM</span>
         </div>
       </div>
-      <hr className="seperator" />
+      <hr className="seperator" />*/}
       <div className="button-container">
         <span style={{ float: "left" }}>
-          Fill all the details below and be a Volunteer
         </span>
         <div style={{ textAlign: "right" }}>
           <button
@@ -829,8 +1263,16 @@ const Registration = (props) => {
           >
             Register
           </button>
+          <button
+            type="button"
+            name="validate"
+            className="clear-btn register-btn"
+            onClick={validate}
+          >
+            Validate
+          </button>
         </div>
-      </div>*/}
+      </div>
       <div className="regContainer">
         <div className="nav-container ">
           <span
@@ -844,33 +1286,40 @@ const Registration = (props) => {
             className={nav === 1 ? "nav-element active" : "nav-element"}
             onClick={() => onNavClick(1)}
           >
-            Contact Details
-          </span>
-          <hr className="nav-line" />
-          <span
-            className={nav === 2 ? "nav-element active" : "nav-element"}
-            onClick={() => onNavClick(2)}
-          >
-            Preferences
+            Professional Details
           </span>
           <hr className="nav-line" />
           <span
             className={nav === 3 ? "nav-element active" : "nav-element"}
-            onClick={() => onNavClick(3)}
+            onClick={() => onNavClick(2)}
           >
-            Additional Details
+            Education 
           </span>
           <hr className="nav-line" />
           <span
-            className={nav === 4 ? "nav-element active" : "nav-element"}
+            className={nav === 2 ? "nav-element active" : "nav-element"}
+            onClick={() => onNavClick(3)}
+          >
+            Employment 
+          </span>
+          <hr className="nav-line" />
+          <span
+            className={nav === 3 ? "nav-element active" : "nav-element"}
             onClick={() => onNavClick(4)}
           >
             Skills
           </span>
           <hr className="nav-line" />
           <span
-            className={nav === 5 ? "nav-element active" : "nav-element"}
+            className={nav === 4 ? "nav-element active" : "nav-element"}
             onClick={() => onNavClick(5)}
+          >
+            Certification
+          </span>
+          <hr className="nav-line" />
+          <span
+            className={nav === 5 ? "nav-element active" : "nav-element"}
+            onClick={() => onNavClick(6)}
           >
             Reference & Consent
           </span>
@@ -880,8 +1329,8 @@ const Registration = (props) => {
             <span className="formCat">Personal Details</span>
             <hr className="form-line" />
             <div className="formEntries">
-              <div className="formElement">
-                <label>First Name</label>
+            <div className="formElement">
+                <label>Candidate ID</label>
                 <br />
                 <input
                   className="form-input"
@@ -892,6 +1341,52 @@ const Registration = (props) => {
                 ></input>
               </div>
               <div className="formElement">
+                
+              </div>
+              <div className="formElement">
+                
+                </div>
+              <div className="formElement">
+                <label>Created Date</label>
+                <br />
+                <input
+                  className="form-input"
+                  placeholder="Enter your last name"
+                  name="lastName"
+                  value={formData.landmark ? formData.lastName : ""}
+                  onChange={handleChange}
+                ></input>
+              </div>
+              
+             
+              <div className="formElement">
+                <label>First Name</label>
+                <br />
+                <input
+                  className="form-input"
+                  placeholder="Enter your first name"
+                  name="firstName"
+                  value={formData.firstName ? formData.firstName : ""}
+                  onChange={handleNameChange}
+                  style={{ borderColor: errors.firstName ? 'red' : '' }}
+                ></input>
+               {errors.firstName && <span style={{ color: 'red' }}>{errors.firstName}</span>}
+              </div>
+              <div className="formElement">
+                <label>Middle Name</label>
+                <br />
+                <input
+                  className="form-input"
+                  placeholder="Enter your Middle name"
+                  name="lastName"
+                  value={formData.middleName ? formData.middleName : ""}
+                  onChange={handleNameChange}
+                  style={{ borderColor: errors.middleName ? 'red' : '' }}
+                ></input>
+                {errors.middleName && <span style={{ color: 'red' }}>{errors.middleName}</span>}
+
+              </div>
+              <div className="formElement">
                 <label>Last Name</label>
                 <br />
                 <input
@@ -899,21 +1394,82 @@ const Registration = (props) => {
                   placeholder="Enter your last name"
                   name="lastName"
                   value={formData.lastName ? formData.lastName : ""}
-                  onChange={handleChange}
+                  onChange={handleNameChange}
+                  style={{ borderColor: errors.lastName ? 'red' : '' }}
                 ></input>
+                {errors.lastName && <span style={{ color: 'red' }}>{errors.lastName}</span>}
+
               </div>
+              
               <div className="formElement">
-                <label>Middle Name</label>
+                <label>Display Name</label>
                 <br />
                 <input
                   className="form-input"
-                  placeholder="Enter your last name"
-                  name="lastName"
-                  value={formData.lastName ? formData.lastName : ""}
-                  onChange={handleChange}
+                  label=""
+                  disabled
+                  name="displayname"
+                  value={formData.displayName ? formData.displayName : ""}
                 ></input>
+
+              </div>
+              <div className="formElement">
+                <label>Phone No</label>
+                <br />
+                <input
+                  className="form-input"
+                  placeholder="Enter your phone"
+                  name="phone"
+                  value={formData.phone ? formData.phone : ""}
+                  onChange={handlePhoneChange}
+                  style={{ borderColor: errors.phone ? 'red' : '' }}
+                ></input>
+                {errors.phone && <span style={{ color: 'red' }}>{errors.phone}</span>}
+
+              </div>
+              <div className="formElement">
+                <label>Alt Phone</label>
+                <br />
+                <input
+                  className="form-input"
+                  placeholder="Enter your alt phone"
+                  name="altPhone"
+                  value={formData.altPhone ? formData.altPhone : ""}
+                  onChange={handleAltPhoneChange}
+                  style={{ borderColor: errors.altPhone ? 'red' : '' }}
+                ></input>
+                {errors.altPhone && <span style={{ color: 'red' }}>{errors.altPhone}</span>}
+
+              </div>
+              <div className="formElement">
+                <label>E Mail</label>
+                <br />
+                <input
+                  className="form-input"
+                  placeholder="Enter your E Mail"
+                  name="email"
+                  value={formData.email ? formData.email : ""}
+                  onChange={handleEmailChange}
+                  style={{ borderColor: errors.email ? 'red' : '' }}
+                ></input>
+                {errors.email && <span style={{ color: 'red' }}>{errors.email}</span>}
+
               </div>
               
+              <div className="formElement">
+                <label>Alt Email</label>
+                <br />
+                <input
+                  className="form-input"
+                  label=""
+                  name="altEmail"
+                  value={formData.altEmail ? formData.altEmail : ""}
+                  onChange={handleAltEmailChange}
+                  style={{ borderColor: errors.altEmail ? 'red' : '' }}
+                ></input>
+                {errors.altEmail && <span style={{ color: 'red' }}>{errors.altEmail}</span>}
+
+              </div>
               <div className="formElement">
                 <label>Date of Birth</label>
                 <br />
@@ -923,28 +1479,12 @@ const Registration = (props) => {
                   type="Date"
                   name="dob"
                   value={formData.dob ? formData.dob : ""}
-                  onChange={handleChange}
+                  onChange={handleDOBChange}
+                  style={{ borderColor: errors.dob ? 'red' : '' }}
                 ></input>
-              </div>
-              <div className="formElement">
-                <label>Nationality</label>
-                <br />
-                <Select
-                  displayEmpty
-                  renderValue={
-                    formData.nationality !== "" ? undefined : () => "Select"
-                  }
-                  style={{ height: "4vh", width: "100%", textAlign: "left" }}
-                  name="nationality"
-                  value={formData.nationality ? formData.nationality : ""}
-                  onChange={handleChange}
-                >
-                  {countries.map((country, index) => (
-                    <MenuItem key={index + country} value={country}>
-                      {country}
-                    </MenuItem>
-                  ))}
-                </Select>
+
+              {errors.dob && <span style={{ color: 'red' }}>{errors.dob}</span>}
+
               </div>
               <div className="formElement">
                 <label>Gender</label>
@@ -954,10 +1494,10 @@ const Registration = (props) => {
                   renderValue={
                     formData.gender !== "" ? undefined : () => "Select"
                   }
-                  style={{ height: "4vh", width: "100%", textAlign: "left" }}
+                  style={{ height: "4vh", width: "100%", textAlign: "left", borderColor: errors.dob ? 'red' : '' }}
                   name="gender"
                   value={formData.gender ? formData.gender : ""}
-                  onChange={handleChange}
+                  onChange={handleGenderChange}
                 >
                   {genderOptions.map((gender, index) => (
                     <MenuItem key={index + gender} value={gender}>
@@ -969,140 +1509,229 @@ const Registration = (props) => {
               <div className="formElement">
                 <label>PAN</label>
                 <br />
-                <Select
-                  displayEmpty
-                  renderValue={
-                    formData.gender !== "" ? undefined : () => "Select"
-                  }
-                  style={{ height: "4vh", width: "100%", textAlign: "left" }}
-                  name="gender"
-                  value={formData.gender ? formData.gender : ""}
-                  onChange={handleChange}
-                >
-                  {genderOptions.map((gender, index) => (
-                    <MenuItem key={index + gender} value={gender}>
-                      {gender}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <input
+                  className="form-input"
+                  placeholder="Add your PAN number"
+                  name="panNo"
+                  value={formData.panNo ? formData.panNo : ""}
+                  onChange={handlePANChange}
+                  style={{ borderColor: errors.panNo ? 'red' : '' }}
+                ></input>
+                {errors.panNo && <span style={{ color: 'red' }}>{errors.panNo}</span>}
+
               </div>
               <div className="formElement">
                 <label>UAN</label>
                 <br />
-                <Select
-                  displayEmpty
-                  renderValue={
-                    formData.gender !== "" ? undefined : () => "Select"
-                  }
-                  style={{ height: "4vh", width: "100%", textAlign: "left" }}
-                  name="gender"
-                  value={formData.gender ? formData.gender : ""}
-                  onChange={handleChange}
-                >
-                  {genderOptions.map((gender, index) => (
-                    <MenuItem key={index + gender} value={gender}>
-                      {gender}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <input
+                  className="form-input"
+                  placeholder="Add your UAN number"
+                  name="uanNo"
+                  value={formData.uanNo ? formData.uanNo : ""}
+                  onChange={handleUANChange}
+                  style={{ borderColor: errors.uanNo ? 'red' : '' }}
+                ></input>
+                {errors.uanNo && <span style={{ color: 'red' }}>{errors.uanNo}</span>}
+
               </div>
             </div>
           </div>
           <div className="form-section" id={1} ref={refArray[1]}>
-            <span className="formCat">Contact Details</span>
+            <span className="formCat">Professional Details</span>
             <hr className="form-line" />
             <div className="formEntries">
               <div className="formElement">
-                <label>Mobile Number</label>
+                <label>Total Exp</label>
                 <br />
                 <input
                   className="form-input"
-                  placeholder="Add your mobile number"
-                  name="mobileNumber"
-                  value={formData.mobileNumber ? formData.mobileNumber : ""}
-                  onChange={handleChange}
+                  placeholder="Enter your Experience"
+                  name="totExp"
+                  value={formData.totExp ? formData.totExp : ""}
+                  onChange={handleTotExpChange}
+                  style={{ borderColor: errors.totExp ? 'red' : '' }}
                 ></input>
+                {errors.totExp && <span style={{ color: 'red' }}>{errors.totExp}</span>}
+
               </div>
               <div className="formElement">
-                <label>E-mail ID</label>
+                <label>Rel Exp</label>
                 <br />
                 <input
                   className="form-input"
-                  placeholder="chandlerBing@gmail.com"
-                  name="email"
-                  value={formData.email ? formData.email : ""}
-                  onChange={handleChange}
+                  placeholder="Enter your Experience"
+                  name="relExp"
+                  value={formData.relExp ? formData.relExp : ""}
+                  onChange={handleRelExpChange}
                 ></input>
+                {errors.relExp && <span style={{ color: 'red' }}>{errors.relExp}</span>}
+
               </div>
               <div className="formElement">
-                <label>Alt email</label>
+                <label>Current CTC</label>
                 <br />
                 <input
                   className="form-input"
-                  placeholder="Enter house no, floor, street"
-                  name="address"
-                  value={formData.address ? formData.address : ""}
-                  onChange={handleChange}
+                  placeholder="Enter CTC"
+                  name="currCTC"
+                  value={formData.currCTC ? formData.currCTC : ""}
+                  onChange={handleCurrCTCChange}
                 ></input>
+                {errors.currCTC && <span style={{ color: 'red' }}>{errors.currCTC}</span>}
+
               </div>
               <div className="formElement">
-                <label>Alt Phone</label>
+                <label>Excpected CTC</label>
                 <br />
                 <input
                   className="form-input"
-                  placeholder="Eg Koramangala"
-                  name="city"
-                  value={formData.city ? formData.city : ""}
-                  onChange={handleChange}
+                  placeholder="Exp CTC"
+                  name="expCTC"
+                  value={formData.expCTC ? formData.expCTC : ""}
+                  onChange={handleExpCTCChange}
                 ></input>
-              </div>
-              {/*<div className="formElement">
-                <label>District</label>
-                <br />
-                <input
-                  className="form-input"
-                  placeholder="Eg Bangalore Urban"
-                  name="district"
-                  value={formData.district ? formData.district : ""}
-                  onChange={handleChange}
-                ></input>
+                {errors.expCTC && <span style={{ color: 'red' }}>{errors.expCTC}</span>}
               </div>
               <div className="formElement">
-                <label>State</label>
+                <label>Current Location</label>
                 <br />
-                <input
-                  className="form-input"
-                  placeholder="Eg Karnataka"
-                  name="state"
-                  value={formData.state ? formData.state : ""}
-                  onChange={handleChange}
-                ></input>
+                <Autocomplete
+                  id="checkboxes-tags"
+                  options={location}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  ChipProps={{ style: chipStyle }}
+                  value={formData.currLoc ? formData.currLoc : []}
+                  onChange={(event, value) =>
+                    handleAutoCompleteChange("currLoc", value)
+                  }
+                  size={"small"}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Choose your preferred Location"
+                    />
+                  )}
+                />
+                {errors.currLoc && <span style={{ color: 'red' }}>{errors.currLoc}</span>}
               </div>
               <div className="formElement">
-                <label>Landmark</label>
+                <label>Preferred Location</label>
                 <br />
-                <input
-                  className="form-input"
-                  placeholder="Enter nearest landmark"
-                  name="landmark"
-                  value={formData.landmark ? formData.landmark : ""}
-                  onChange={handleChange}
-                ></input>
+                <Autocomplete
+                  multiple
+                  id="checkboxes-tags"
+                  options={location}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  ChipProps={{ style: chipStyle }}
+                  value={formData.prefLoc ? formData.prefLoc : []}
+                  onChange={(event, value) =>
+                    handleAutoCompleteChange("prefLoc", value)
+                  }
+                  size={"small"}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Choose your preferred Location"
+                    />
+                  )}
+                />
+                {errors.prefLoc && <span style={{ color: 'red' }}>{errors.prefLoc}</span>}
               </div>
               <div className="formElement">
-                <label>Pincode</label>
+                <label>Notice Period</label>
                 <br />
-                <input
-                  className="form-input"
-                  placeholder="Enter your pincode"
-                  name="pincode"
-                  value={formData.pincode ? formData.pincode : ""}
-                  onChange={handleChange}
-                ></input>
-              </div>*/}
+                <Autocomplete
+                  id="checkboxes-tags"
+                  options={noticePeriod}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  ChipProps={{ style: chipStyle }}
+                  value={formData.noticePeriod ? formData.noticePeriod : []}
+                  onChange={(event, value) =>
+                    handleAutoCompleteChange("noticePeriod", value)
+                  }
+                  size={"small"}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Choose your preferred Location"
+                    />
+                  )}
+                />
+                {errors.noticePeriod && <span style={{ color: 'red' }}>{errors.noticePeriod}</span>}
+              </div>
+              <div className="formElement">
+                <label>Preferred Job</label>
+                <br />
+                <Autocomplete
+                  id="checkboxes-tags"
+                  options={PrefJob}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  ChipProps={{ style: chipStyle }}
+                  value={formData.prefJob ? formData.prefJob : []}
+                  onChange={(event, value) =>
+                    handleAutoCompleteChange("prefJob", value)
+                  }
+                  size={"small"}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Choose your preferred Job"
+                    />
+                  )}
+                />
+                {errors.prefJob && <span style={{ color: 'red' }}>{errors.prefJob}</span>}
+              </div>
             </div>
           </div>
-          <div className="form-section" id={2} ref={refArray[2]}>
+          {/*<div className="form-section" id={2} ref={refArray[2]}>
             <span className="formCat">Preferences</span>
             <hr className="form-line" />
             <div className="formEntries">
@@ -1419,58 +2048,8 @@ const Registration = (props) => {
                 />
               </div>
             </div>
-          </div>
-          <div className="form-section" id={3} ref={refArray[3]}>
-          <span className="formCat">Uploads</span>
-          <hr className="form-line" />
-          <div className="formEntries">
-              <div className="formElement">
-                <label>Resume</label>
-                <br />
-                <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          //onChange={handleInputChange}
-          //onChange={(e) => setImage(e.target.files[0])}
-        />
-              </div>
-              <div className="formElement">
-                <label>Image</label>
-                <br />
-                <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          //onChange={handleInputChange}
-          //onChange={(e) => setImage(e.target.files[0])}
-        />
-              </div>
-              <div className="formElement">
-                <label>UAN File</label>
-                <br />
-                <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          //onChange={handleInputChange}
-          //onChange={(e) => setImage(e.target.files[0])}
-        />
-              </div>
-              <div className="formElement">
-                <label>Pan Card</label>
-                <br />
-                <input
-          type="file"
-          id="resumeUpload"
-          name="resumeUpload"
-          //onChange={handleFileChange}
-          //{(e) => setResume(e.target.files[0])}
-          required
-        />
-              </div>
-              </div>
-              </div>
+          </div>*/}
+
         {/*
           <div className="form-section" id={3} ref={refArray[3]}>
             <span className="formCat">Additional Details</span>
@@ -1545,291 +2124,14 @@ const Registration = (props) => {
               </div>
             </div>
           </div>*/}
-          <div className="form-section" id={4} ref={refArray[4]}>
-            <span className="formCat">Skills</span>
-            <hr className="form-line" />
-            {formData.skills.map((skillData, index) => (
-              <div className="formEntries">
-                <div className="formElement">
-                  <label>Skill</label>
-                  <br />
-                  <input
-                    className="form-input"
-                    label="Eg. Teaching"
-                    name="skillName"
-                    value={skillData.skillName}
-                    onChange={(event) => {
-                      handleChange(event, index);
-                    }}
-                  ></input>
-                </div>
-                <div className="formElement">
-                  <label>Skill Level</label>
-                  <br />
-                  <div className="form-skill">
-                    <Select
-                      displayEmpty
-                      style={{
-                        height: "4vh",
-                        width: "100%",
-                        textAlign: "left",
-                      }}
-                      name="skillLevel"
-                      value={skillData.skillLevel}
-                      onChange={(event) => handleChange(event, index)}
-                      renderValue={
-                        skillData.skillLevel !== ""
-                          ? undefined
-                          : () => "Choose your skill level"
-                      }
-                    >
-                      {skillSet.map((name, index) => (
-                        <MenuItem
-                          key={index + name.name}
-                          value={name.name}
-                        >
-                          {name.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-
-                </div></div>
-                <div className="formElement">
-                  <label>Skill Level</label>
-                  <br />
-                  <div className="form-skill">
-                    <Select
-                      displayEmpty
-                      style={{
-                        height: "4vh",
-                        width: "100%",
-                        textAlign: "left",
-                      }}
-                      name="skillLevel"
-                      value={skillData.skillLevel}
-                      onChange={(event) => handleChange(event, index)}
-                      renderValue={
-                        skillData.skillLevel !== ""
-                          ? undefined
-                          : () => "Choose your skill level"
-                      }
-                    >
-                      {skillLevel.map((qualification, index) => (
-                        <MenuItem
-                          key={index + qualification}
-                          value={qualification}
-                        >
-                          {qualification}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {formData.skills.length > 1 && (
-                      <button
-                        type="button"
-                        className="remove-btn"
-                        onClick={() => removeSkill(index)}
-                      >
-                        x
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            <button className='addSkillButton' type="button" onClick={() => addSkill()}>
-              + Add skill
-            </button>
-          </div>
-         <div className="form-section1" id={4} ref={refArray[4]}>
-            <span className="formCat">Employment</span>
-            <hr className="form-line" />
-            {formData.employs.map((empData, index) => (
-              <div className="formEntries1">
-                <div className="formElement">
-                  <label>Company</label>
-                  <br />
-                  {/*<input
-                    className="form-input"
-                    label="Eg. Teaching"
-                    name="skillName"
-                    value={empData.company}
-                    onChange={(event) => {
-                      handleChange(event, index);
-                    }}
-                  ></input>*/}
-
-                      <Select
-                      displayEmpty
-                      style={{
-                        height: "4vh",
-                        width: "100%",
-                        textAlign: "left",
-                      }}
-                      name="company"
-                      value={empData.company}
-                      onChange={(event) => handleChange(event, index)}
-                      renderValue={
-                        empData.company !== ""
-                          ? undefined
-                          : () => "Choose your Company"
-                      }
-                    >
-                      {organisation.map((name, index) => (
-                        <MenuItem
-                          key={index + name.name}
-                          value={name.name}
-                        >
-                          {name.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                </div>
-                <div className="formElement">
-                  <label>JobType</label>
-                  <br />
-                  <div className="form-skill">
-                    <Select
-                      displayEmpty
-                      style={{
-                        height: "4vh",
-                        width: "100%",
-                        textAlign: "left",
-                      }}
-                      name="jobType"
-                      value={empData.jobType}
-                      onChange={(event) => handleChange(event, index)}
-                      renderValue={
-                        empData.jobType !== ""
-                          ? undefined
-                          : () => "Choose your JobType"
-                      }
-                    >
-                      {jobType.map((name, index) => (
-                        <MenuItem
-                          key={index + name.name}
-                          value={name.name}
-                        >
-                          {name.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-
-                </div></div>
-                <div className="formElement">
-                  <label>Designation</label>
-                  <br />
-                  <div className="form-skill">
-                    <Select
-                      displayEmpty
-                      style={{
-                        height: "4vh",
-                        width: "100%",
-                        textAlign: "left",
-                      }}
-                      name="designation"
-                      value={empData.designation}
-                      onChange={(event) => handleChange(event, index)}
-                      renderValue={
-                        empData.designation !== ""
-                          ? undefined
-                          : () => "Choose your Designation"
-                      }
-                    >
-                      {designation.map((name, index) => (
-                        <MenuItem
-                          key={index + name.name}
-                          value={name.name}
-                        >
-                          {name.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-
-                </div></div>
-                <div className="formElement">
-                  <label>Payroll</label>
-                  <br />
-                  <div className="form-skill">
-                    <Select
-                      displayEmpty
-                      style={{
-                        height: "4vh",
-                        width: "100%",
-                        textAlign: "left",
-                      }}
-                      name="payRoll"
-                      value={empData.payRoll}
-                      onChange={(event) => handleChange(event, index)}
-                      renderValue={
-                        empData.payRoll !== ""
-                          ? undefined
-                          : () => "Payroll"
-                      }
-                    >
-                      {payroll.map((name, index) => (
-                        <MenuItem
-                          key={index + name.name}
-                          value={name.name}
-                        >
-                          {name.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-
-                </div></div>
-                <div className="formElement">
-                  <label>From</label>
-                  <br />
-                  <div className="form-skill">
-                    
-                    <input type="date"
-                    className="form-input"
-                    label="Eg. Teaching"
-                    name="empFrom"
-                    value={empData.empFrom}
-                    onChange={(event) => {
-                      handleChange(event, index);
-                    }}
-                  ></input>
-                </div></div>
-                <div className="formElement">
-                  <label>To</label>
-                  <br />
-                  <div className="form-skill">
-                    
-                    <input type="date"
-                    className="form-input"
-                    label="Eg. Teaching"
-                    name="empTo"
-                    value={empData.empTo}
-                    onChange={(event) => {
-                      handleChange(event, index);
-                    }}
-                  ></input>
-                    {formData.employs.length > 1 && (
-                      <button
-                        type="button"
-                        className="remove-btn"
-                        onClick={() => removeCompany(index)}
-                      >
-                        x
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            <button className='addSkillButton' type="button" onClick={() => addCompany()}>
-              + Add Company
-            </button>
-          </div>
-          <div className="form-section1" id={4} ref={refArray[4]}>
+          
+          <div className="form-section1" id={4} ref={refArray[3]}>
             <span className="formCat">Education</span>
             <hr className="form-line" />
             {formData.education.map((eduData, index) => (
               <div className="formEntries1">
                 <div className="formElement">
-                  <label>Company</label>
+                  <label>Degree</label>
                   <br />
                       <Select
                       displayEmpty
@@ -1995,8 +2297,456 @@ const Registration = (props) => {
             <button className='addSkillButton' type="button" onClick={() => addEducation()}>
               + Add Education
             </button>
+          </div> 
+         <div className="form-section1" id={3} ref={refArray[3]}>
+            <span className="formCat">Employment</span>
+            <hr className="form-line" />
+            {formData.employs.map((empData, index) => (
+              <div className="formEntries1">
+                <div className="formElement">
+                  <label>Company</label>
+                  <br />
+                  {/*<input
+                    className="form-input"
+                    label="Eg. Teaching"
+                    name="skillName"
+                    value={empData.company}
+                    onChange={(event) => {
+                      handleChange(event, index);
+                    }}
+                  ></input>*/}
+
+                      <Select
+                      displayEmpty
+                      style={{
+                        height: "4vh",
+                        width: "100%",
+                        textAlign: "left",
+                      }}
+                      name="company"
+                      value={empData.company}
+                      onChange={(event) => handleChange(event, index)}
+                      renderValue={
+                        empData.company !== ""
+                          ? undefined
+                          : () => "Choose your Company"
+                      }
+                    >
+                      {organisation.map((name, index) => (
+                        <MenuItem
+                          key={index + name.name}
+                          value={name.name}
+                        >
+                          {name.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                </div>
+                <div className="formElement">
+                  <label>JobType</label>
+                  <br />
+                  <div className="form-skill">
+                    <Select
+                      displayEmpty
+                      style={{
+                        height: "4vh",
+                        width: "100%",
+                        textAlign: "left",
+                      }}
+                      name="jobType"
+                      value={empData.jobType}
+                      onChange={(event) => handleChange(event, index)}
+                      renderValue={
+                        empData.jobType !== ""
+                          ? undefined
+                          : () => "Choose your JobType"
+                      }
+                    >
+                      {jobType.map((name, index) => (
+                        <MenuItem
+                          key={index + name.name}
+                          value={name.name}
+                        >
+                          {name.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                </div></div>
+                
+                <div className="formElement">
+                  <label>Designation</label>
+                  <br />
+                  <div className="form-skill">
+                    <Select
+                      displayEmpty
+                      style={{
+                        height: "4vh",
+                        width: "100%",
+                        textAlign: "left",
+                      }}
+                      name="designation"
+                      value={empData.designation}
+                      onChange={(event) => handleChange(event, index)}
+                      renderValue={
+                        empData.designation !== ""
+                          ? undefined
+                          : () => "Choose your Designation"
+                      }
+                    >
+                      {designation.map((name, index) => (
+                        <MenuItem
+                          key={index + name.name}
+                          value={name.name}
+                        >
+                          {name.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                </div></div>
+                <div className="formElement">
+                  <label>Payroll</label>
+                  <br />
+                  <div className="form-skill">
+                    <Select
+                      displayEmpty
+                      style={{
+                        height: "4vh",
+                        width: "100%",
+                        textAlign: "left",
+                      }}
+                      name="payRoll"
+                      value={empData.payRoll}
+                      onChange={(event) => handleChange(event, index)}
+                      renderValue={
+                        empData.payRoll !== ""
+                          ? undefined
+                          : () => "Payroll"
+                      }
+                    >
+                      {payroll.map((name, index) => (
+                        <MenuItem
+                          key={index + name.name}
+                          value={name.name}
+                        >
+                          {name.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                </div></div>
+                <div className="formElement">
+                  <label>From</label>
+                  <br />
+                  <div className="form-skill">
+                    
+                    <input type="date"
+                    className="form-input"
+                    label="Eg. Teaching"
+                    name="empFrom"
+                    value={empData.empFrom}
+                    onChange={(event) => {
+                      handleChange(event, index);
+                    }}
+                  ></input>
+                </div></div>
+                <div className="formElement">
+                  <label>To</label>
+                  <br />
+                  <div className="form-skill">
+                    
+                    <input type="date"
+                    className="form-input"
+                    label="Eg. Teaching"
+                    name="empTo"
+                    value={empData.empTo}
+                    onChange={(event) => {
+                      handleChange(event, index);
+                    }}
+                  ></input>
+                    {formData.employs.length > 1 && (
+                      <button
+                        type="button"
+                        className="remove-btn"
+                        onClick={() => removeCompany(index)}
+                      >
+                        x
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button className='addSkillButton' type="button" onClick={() => addCompany()}>
+              + Add Company
+            </button>
+          </div>
+          <div className="form-section" id={4} ref={refArray[4]}>
+            <span className="formCat">Skills</span>
+            <hr className="form-line" />
+            {formData.skills.map((skillData, index) => (
+              <div className="formEntries">
+                {/*<div className="formElement">
+                  <label>Skill</label>
+                  <br />
+                  <input
+                    className="form-input"
+                    label="Eg. Teaching"
+                    name="skillName"
+                    value={skillData.skillName}
+                    onChange={(event) => {
+                      handleChange(event, index);
+                    }}
+                  ></input>
+                </div>*/}
+                <div className="formElement">
+                  <label>Skill</label>
+                  <br />
+                  <div className="form-skill">
+                    <Select
+                      displayEmpty
+                      style={{
+                        height: "4vh",
+                        width: "100%",
+                        textAlign: "left",
+                      }}
+                      name="skillName"
+                      value={skillData.skillName}
+                      onChange={(event) => handleChange(event, index)}
+                      renderValue={
+                        skillData.skillName !== ""
+                          ? undefined
+                          : () => "Choose your skill Name"
+                      }
+                    >
+                      {skillSet.map((name, index) => (
+                        <MenuItem
+                          key={index + name.name}
+                          value={name.name}
+                        >
+                          {name.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                </div></div>
+                <div className="formElement">
+                  <label>Skill Level</label>
+                  <br />
+                  <div className="form-skill">
+                    <Select
+                      displayEmpty
+                      style={{
+                        height: "4vh",
+                        width: "100%",
+                        textAlign: "left",
+                      }}
+                      name="skillLevel"
+                      value={skillData.skillLevel}
+                      onChange={(event) => handleChange(event, index)}
+                      renderValue={
+                        skillData.skillLevel !== ""
+                          ? undefined
+                          : () => "Choose your skill level"
+                      }
+                    >
+                      {skillLevel.map((qualification, index) => (
+                        <MenuItem
+                          key={index + qualification}
+                          value={qualification}
+                        >
+                          {qualification}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {formData.skills.length > 1 && (
+                      <button
+                        type="button"
+                        className="remove-btn"
+                        onClick={() => removeSkill(index)}
+                      >
+                        x
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button className='addSkillButton' type="button" onClick={() => addSkill()}>
+              + Add skill
+            </button>
           </div>
           <div className="form-section" id={5} ref={refArray[5]}>
+            <span className="formCat">Certification</span>
+            <hr className="form-line" />
+            {formData.certs.map((certData, index) => (
+              <div className="formEntries">
+                <div className="formElement">
+                  <label>CertificationName</label>
+                  <br />
+                  <input
+                    className="form-input"
+                    label="Eg. Teaching"
+                    name="certName"
+                    value={certData.certName}
+                    onChange={(event) => {
+                      handleChange(event, index);
+                    }}
+                  ></input>
+                </div>
+                <div className="formElement">
+                  <label>CertificationNo</label>
+                  <br />
+                  <div className="form-skill">
+                  <input
+                    className="form-input"
+                    label="Eg. Teaching"
+                    name="certNo"
+                    value={certData.certNo}
+                    onChange={(event) => {
+                      handleChange(event, index);
+                    }}
+                  ></input>
+
+                </div></div>
+                <div className="formElement">
+                  <label>Date</label>
+                  <br />
+                  <div className="form-skill">
+                  <input
+                    className="form-input"
+                    label="Eg. Teaching"
+                    name="certDate"
+                    type="date"
+                    value={certData.certDate}
+                    onChange={(event) => {
+                      handleChange(event, index);
+                    }}
+                  ></input>
+                    {formData.certs.length > 1 && (
+                      <button
+                        type="button"
+                        className="remove-btn"
+                        onClick={() => removeCerts(index)}
+                      >
+                        x
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button className='addSkillButton' type="button" onClick={() => addCert()}>
+              + Add Certification
+            </button>
+          </div>
+          <div className="form-section" >
+          <span className="formCat">Documents</span>
+          <hr className="form-line" />
+          <div className="formEntries">
+              <div className="formElement">
+                <label>Resume</label>
+                <br />
+                <input
+          type="file"
+          id="documentUpload"
+          name="documentUpload"
+          //onChange={handleInputChange}
+          //onChange={(e) => setImage(e.target.files[0])}
+        />
+              </div>
+              <div className="formElement">
+                <label>Image</label>
+                <br />
+                <input
+          type="file"
+          id="documentUpload"
+          name="documentUpload"
+          //onChange={handleInputChange}
+          //onChange={(e) => setImage(e.target.files[0])}
+        />
+              </div>
+              <div className="formElement">
+                <label>UAN File</label>
+                <br />
+                <input
+          type="file"
+          id="documentUpload"
+          name="documentUpload"
+          //onChange={handleInputChange}
+          //onChange={(e) => setImage(e.target.files[0])}
+        />
+              </div>
+              <div className="formElement">
+                <label>Pan Card</label>
+                <br />
+                <input
+          type="file"
+          id="resumeUpload"
+          name="resumeUpload"
+          //onChange={handleFileChange}
+          //{(e) => setResume(e.target.files[0])}
+          required
+        />
+              </div>
+              </div>
+              </div>
+              <div className="form-section">
+          <span className="formCat">Others</span>
+          <hr className="form-line" />
+          <div className="formEntries">
+              <div className="formElement">
+                <label>Source Type</label>
+                <br />
+                <input
+          type="file"
+          id="documentUpload"
+          name="documentUpload"
+          //onChange={handleInputChange}
+          //onChange={(e) => setImage(e.target.files[0])}
+        />
+              </div>
+              <div className="formElement">
+                <label>Source Name</label>
+                <br />
+                <input
+          type="file"
+          id="documentUpload"
+          name="documentUpload"
+          //onChange={handleInputChange}
+          //onChange={(e) => setImage(e.target.files[0])}
+        />
+              </div>
+              <div className="formElement">
+                <label>LinkedIn</label>
+                <br />
+                <input
+          type="file"
+          id="documentUpload"
+          name="documentUpload"
+          //onChange={handleInputChange}
+          //onChange={(e) => setImage(e.target.files[0])}
+        />
+              </div>
+              <div className="formElement">
+
+              </div>
+              <div className="formElement">
+                <label>Comments</label>
+                <br />
+                   <textarea
+                      id="comments"
+                      name="comments"
+                      value={formData.comments}
+                      onChange={handleChange}
+                      maxLength={3000}
+                      style={{width:'100%'}} rows={5}
+                  />
+              </div>
+              </div>
+              </div>   
+          <div className="form-section" id={6} ref={refArray[6]}>
             <span className="formCat">Reference & Consent</span>
             <hr className="form-line" />
             <div className="formEntries">
