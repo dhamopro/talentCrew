@@ -691,6 +691,36 @@ const Registration = (props) => {
     handleChange({ target: { name: name, value: value } });
   };
 
+  const isValidInput = (key, value) => {
+    console.info(key);
+    console.info(value);
+    if (!value.trim()){
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateAllRows = (section) => {
+    let allValid = true;
+    const updatedErrors = { ...errors };
+
+    formData[section].forEach((item, index) => {
+      console.info(section);
+      Object.keys(item).forEach((key) => {
+        if (!isValidInput(key, item[key])) {
+          allValid = false;
+          updatedErrors[section] = updatedErrors[section] || [];
+          updatedErrors[section][index] = { ...updatedErrors[section][index], [key]: `Invalid value for ${key}` };
+        }
+      });
+    });
+
+    setErrors(updatedErrors);
+    console.info(updatedErrors);
+    return allValid;
+  };
+
   const handleChange = (event, count = 0) => {
     // console.log(event, "check this");
     const { name, value, placeholder } = event.target;
@@ -715,6 +745,13 @@ const Registration = (props) => {
         ...formData,
         employs: updatedCompany,
       });
+
+      const updatedErrors = { ...errors };
+  
+      updatedErrors['employs'] = updatedErrors['employs'] || [];
+  
+      updatedErrors['employs'][count] = { ...updatedErrors['employs'][count],  [name]: 'error' };
+
       return;
     }
 
@@ -726,6 +763,56 @@ const Registration = (props) => {
         ...formData,
         education: updatedEdus,
       });
+
+      const error1 = [];
+      error1['degree'] = 'Degree is required';
+      error1['cpga'] = 'Degree is required';
+
+      let error = '';
+      if (name === 'cpga' && (isNaN(value) || value < 0 || value > 4)) {
+        error = 'CPGA must be a number between 0 and 4';
+        console.info('Inside error');
+      } 
+      /*
+      if (updatedEdus[count]['degree'] === "") {
+
+        error = 'Degree is required';
+        console.info('Inside error');
+      } */
+
+   /* if (error) {
+      updatedErrors[count] = { ...updatedErrors[count], [name]: error };
+    } else if (updatedErrors[count]) {
+      delete updatedErrors[count][name];
+      if (Object.keys(updatedErrors[count]).length === 0) {
+        delete updatedErrors[count];
+      }
+    }*/
+
+    const updatedErrors = { ...errors };
+  
+    updatedErrors['education'] = updatedErrors['education'] || [];
+    updatedErrors['employs'] = updatedErrors['employs'] || [];
+    //updatedErrors['employment1'] = updatedErrors['employment1'] || [];
+
+    //updatedErrors['employment1'][count] = { ...updatedErrors['employment1'][count],  error1 };
+
+    //updatedErrors['education'][count] = { ...updatedErrors['education'][count], [name]: error };
+
+    //updatedErrors['employment'][count] = { ...updatedErrors['employment'][count], [name]: error1 };
+
+    updatedErrors['employs'][count] = { ...updatedErrors['employs'][count],  [name]: error };
+
+    updatedErrors['education'][count] = { ...updatedErrors['education'][count],  [name]: error };
+    //updatedErrors['education'][count] = { ...updatedErrors['education'][count],  ['degree']: error };
+    updatedErrors['education'][count] = { ...updatedErrors['education'][count],  [name]: error };
+    updatedErrors['education'][count] = { ...updatedErrors['education'][count],  [name]: error };
+
+
+    console.info(updatedErrors);
+    setErrors(updatedErrors);
+    console.info(errors);
+
       return;
     }
 
@@ -737,6 +824,13 @@ const Registration = (props) => {
         ...formData,
         certs: updatedCerts,
       });
+
+      const updatedErrors = { ...errors };
+  
+    updatedErrors['employs'] = updatedErrors['employs'] || [];
+
+    updatedErrors['employs'][count] = { ...updatedErrors['employs'][count],  [name]: 'error' };
+
       return;
     }
     
@@ -888,6 +982,11 @@ const Registration = (props) => {
     handlePrefLocChange(event);
     handleNoticePeriodChange(event);
     handlePrefJobChange(event);
+    
+    validateAllRows('education');
+    validateAllRows('employs');
+    validateAllRows('certs');
+    validateAllRows('skills');
 
 
     console.log(errors);
@@ -1636,7 +1735,7 @@ const handlePrefJobChange = (event) => {
                   disableCloseOnSelect
                   getOptionLabel={(option) => option.name}
                   ChipProps={{ style: chipStyle }}
-                  value={formData.prefLoc ? formData.prefLoc : []}
+                  value={formData.prefLoc ? formData.prefLoc : ""}
                   onChange={(event, value) =>
                     handleAutoCompleteChange("prefLoc", value)
                   }
@@ -1670,7 +1769,7 @@ const handlePrefJobChange = (event) => {
                   disableCloseOnSelect
                   getOptionLabel={(option) => option.name}
                   ChipProps={{ style: chipStyle }}
-                  value={formData.noticePeriod ? formData.noticePeriod : []}
+                  value={formData.noticePeriod ? formData.noticePeriod : ""}
                   onChange={(event, value) =>
                     handleAutoCompleteChange("noticePeriod", value)
                   }
@@ -1704,7 +1803,7 @@ const handlePrefJobChange = (event) => {
                   disableCloseOnSelect
                   getOptionLabel={(option) => option.name}
                   ChipProps={{ style: chipStyle }}
-                  value={formData.prefJob ? formData.prefJob : []}
+                  value={formData.prefJob ? formData.prefJob : ""}
                   onChange={(event, value) =>
                     handleAutoCompleteChange("prefJob", value)
                   }
@@ -2148,6 +2247,7 @@ const handlePrefJobChange = (event) => {
                           ? undefined
                           : () => "Choose your degree"
                       }
+                      
                     >
                       {degree.map((name, index) => (
                         <MenuItem
@@ -2158,6 +2258,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {errors.education && errors.education[index] && errors.education[index].degree && (
+            <span  style={{ color: 'red' }}>{errors.education[index].degree}</span>
+          )}
                 </div>
                 <div className="formElement">
                   <label>Subject</label>
@@ -2189,6 +2292,10 @@ const handlePrefJobChange = (event) => {
                       ))}
                     </Select>
 
+                    {errors.education && errors.education[index] && errors.education[index].subject && (
+            <span  style={{ color: 'red' }}>{errors.education[index].subject}</span>
+          )}
+
                 </div></div>
                 <div className="formElement">
                   <label>Institution</label>
@@ -2219,7 +2326,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
-
+                    {errors.education && errors.education[index] && errors.education[index].institution && (
+            <span  style={{ color: 'red' }}>{errors.education[index].institution}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>University</label>
@@ -2250,7 +2359,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
-
+                    {errors.education && errors.education[index] && errors.education[index].university && (
+            <span  style={{ color: 'red' }}>{errors.education[index].university}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>CPGA</label>
@@ -2266,6 +2377,9 @@ const handlePrefJobChange = (event) => {
                       handleChange(event, index);
                     }}
                   ></input>
+                  {errors.education && errors.education[index] && errors.education[index].cpga && (
+            <span  style={{ color: 'red' }}>{errors.education[index].cpga}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>PassOut</label>
@@ -2281,6 +2395,9 @@ const handlePrefJobChange = (event) => {
                       handleChange(event, index);
                     }}
                   ></input>
+                  {errors.education && errors.education[index] && errors.education[index].passOut && (
+            <span  style={{ color: 'red' }}>{errors.education[index].passOut}</span>
+          )}
                     {formData.education.length > 1 && (
                       <button
                         type="button"
@@ -2341,6 +2458,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {errors.employs && errors.employs[index] && errors.employs[index].passOut && (
+            <span  style={{ color: 'red' }}>{errors.employs[index].company}</span>
+          )}
                 </div>
                 <div className="formElement">
                   <label>JobType</label>
@@ -2371,7 +2491,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
-
+                    {errors.employs && errors.employs[index] && errors.employs[index].jobType && (
+            <span  style={{ color: 'red' }}>{errors.employs[index].jobType}</span>
+          )}
                 </div></div>
                 
                 <div className="formElement">
@@ -2403,7 +2525,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
-
+                    {errors.employs && errors.employs[index] && errors.employs[index].designation && (
+            <span  style={{ color: 'red' }}>{errors.employs[index].designation}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>Payroll</label>
@@ -2434,7 +2558,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
-
+                    {errors.employs && errors.employs[index] && errors.employs[index].payRoll && (
+            <span  style={{ color: 'red' }}>{errors.employs[index].payRoll}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>From</label>
@@ -2450,6 +2576,9 @@ const handlePrefJobChange = (event) => {
                       handleChange(event, index);
                     }}
                   ></input>
+                  {errors.employs && errors.employs[index] && errors.employs[index].empFrom && (
+            <span  style={{ color: 'red' }}>{errors.employs[index].empFrom}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>To</label>
@@ -2465,6 +2594,9 @@ const handlePrefJobChange = (event) => {
                       handleChange(event, index);
                     }}
                   ></input>
+                  {errors.employs && errors.employs[index] && errors.employs[index].empTo && (
+            <span  style={{ color: 'red' }}>{errors.employs[index].empTo}</span>
+          )}
                     {formData.employs.length > 1 && (
                       <button
                         type="button"
@@ -2529,7 +2661,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
-
+                    {errors.skills && errors.skills[index] && errors.skills[index].skillName && (
+            <span  style={{ color: 'red' }}>{errors.skills[index].skillName}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>Skill Level</label>
@@ -2560,6 +2694,9 @@ const handlePrefJobChange = (event) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {errors.skills && errors.skills[index] && errors.skills[index].skillLevel && (
+            <span  style={{ color: 'red' }}>{errors.skills[index].skillLevel}</span>
+          )}
                     {formData.skills.length > 1 && (
                       <button
                         type="button"
@@ -2594,6 +2731,9 @@ const handlePrefJobChange = (event) => {
                       handleChange(event, index);
                     }}
                   ></input>
+                  {errors.certs && errors.certs[index] && errors.certs[index].certName && (
+            <span  style={{ color: 'red' }}>{errors.certs[index].certName}</span>
+          )}
                 </div>
                 <div className="formElement">
                   <label>CertificationNo</label>
@@ -2608,7 +2748,9 @@ const handlePrefJobChange = (event) => {
                       handleChange(event, index);
                     }}
                   ></input>
-
+                  {errors.certs && errors.certs[index] && errors.certs[index].certNo && (
+            <span  style={{ color: 'red' }}>{errors.certs[index].certNo}</span>
+          )}
                 </div></div>
                 <div className="formElement">
                   <label>Date</label>
