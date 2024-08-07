@@ -475,6 +475,10 @@ const Registration = (props) => {
 
   const [PrefJob, setPrefJob] = useState([]);
 
+  const [sourceType, setSourceType] = useState([]);
+
+  const [sourceName, setSourceName] = useState([]);
+
   
   const [errors, setErrors] = useState({});
 
@@ -654,6 +658,36 @@ const Registration = (props) => {
       }
     };
 
+    const fetchSourceName = async () => {
+      try {
+        console.log('fetchPayroll');
+        // you can also fetch all records at once via getFullList
+      const records = await pb.collection('Source_name').getFullList({
+        sort: '-created',
+      });
+       
+      setSourceName(records);
+      console.log(records);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchSourceType = async () => {
+      try {
+        console.log('fetchPayroll');
+        // you can also fetch all records at once via getFullList
+      const records = await pb.collection('Source_Type').getFullList({
+        sort: '-created',
+      });
+       
+      setSourceType(records);
+      console.log(records);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
     const fetchPrefJob = async () => {
       try {
         console.log('fetchPayroll');
@@ -681,6 +715,8 @@ const Registration = (props) => {
     fetchInstitution();
     fetchLocation();
     fetchNoticePeriod();
+    fetchSourceName();
+    fetchSourceType();
   }, []); 
 
   const [nav, setNav] = useState(0);
@@ -2841,33 +2877,78 @@ const handlePrefJobChange = (event) => {
               <div className="formElement">
                 <label>Source Type</label>
                 <br />
-                <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          //onChange={handleInputChange}
-          //onChange={(e) => setImage(e.target.files[0])}
-        />
+                <Autocomplete
+                  id="checkboxes-tags"
+                  options={sourceType}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  ChipProps={{ style: chipStyle }}
+                  value={formData.sourceType ? formData.sourceType : []}
+                  onChange={(event, value) =>
+                    handleAutoCompleteChange("sourceType", value)
+                  }
+                  size={"small"}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Choose your sourceType Location"
+                    />
+                  )}
+                />
+                {errors.sourceType && <span style={{ color: 'red' }}>{errors.sourceType}</span>}
               </div>
               <div className="formElement">
                 <label>Source Name</label>
                 <br />
-                <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          //onChange={handleInputChange}
-          //onChange={(e) => setImage(e.target.files[0])}
-        />
+                <Autocomplete
+                  id="checkboxes-tags"
+                  options={sourceName}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  ChipProps={{ style: chipStyle }}
+                  value={formData.sourceName ? formData.sourceName : []}
+                  onChange={(event, value) =>
+                    handleAutoCompleteChange("sourceName", value)
+                  }
+                  size={"small"}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Choose your preferred Location"
+                    />
+                  )}
+                />
+                {errors.sourceName && <span style={{ color: 'red' }}>{errors.sourceName}</span>}
               </div>
               <div className="formElement">
                 <label>LinkedIn</label>
                 <br />
                 <input
-          type="file"
-          id="documentUpload"
-          name="documentUpload"
-          //onChange={handleInputChange}
+          id="linkedIn"
+          name="linkedIn"
+          onChange={handleChange}
           //onChange={(e) => setImage(e.target.files[0])}
         />
               </div>
