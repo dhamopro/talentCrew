@@ -12,6 +12,10 @@ import Component2 from "./pages/Profile/Edit";
 import EditRecord from "./pages/Profile/Edit1";
 import EditRecord2 from "./pages/Profile/Edit2";
 import Registration from "./pages/Registration/Registration";
+import NeedsTable from "./pages/NeedsTable/NeedsTable";
+import TableComponent from "./pages/NeedsTable/RequirementTable";
+import CandidateTable from "./pages/NeedsTable/CandidateTable";
+import AggregateComponent from "./pages/NeedsTable/AllRecords";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -23,6 +27,12 @@ root.render(
           <Route path='entity' element={<About />} />
           <Route path='requirement' element={<Friends />} />
           <Route path='register' element={<Registration />} />
+          <Route path='list' element={<CandidateTable />} />
+          <Route path='list1' element={<NeedsTable />} />
+          <Route path='agg' element={<AggregateComponent />} />
+
+
+          
           
         </Route>
         <Route path='/edit1' element={<Component2 />}>

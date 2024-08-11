@@ -3,6 +3,10 @@ import styles from "./Sidebar.module.css";
 import ProfileIcon from "../../icons/ProfileIcon";
 import AboutIcon from "../../icons/AboutIcon";
 import FriendsIcon from "../../icons/FriendsIcon";
+import RequirementIcon from "../../icons/RequireListing";
+import { List } from "@mui/material";
+import RecentActorsIcon from '@mui/icons-material/RecentActors';
+
 
 const Sidebar = () => {
   const location = useLocation();
@@ -73,7 +77,52 @@ const Sidebar = () => {
             {" "}
             <div className={styles.menuDiv}>
               <div className={styles.svgIcon}>
+             
               <ProfileIcon />
+              </div>
+              <div className={styles.menuText}>register</div>
+            </div>
+          </Link>
+          <Link
+            to={"/list"}
+            className={`${styles.navItem}  ${isActive(
+              location.pathname,
+              "/list"
+            )}`}
+          >
+            {" "}
+            <div className={styles.menuDiv}>
+              <div className={styles.svgIcon}>
+              <RecentActorsIcon />              </div>
+              <div className={styles.menuText}>register</div>
+            </div>
+          </Link>
+          <Link
+            to={"/list1"}
+            className={`${styles.navItem}  ${isActive(
+              location.pathname,
+              "/list"
+            )}`}
+          >
+            {" "}
+            <div className={styles.menuDiv}>
+              <div className={styles.svgIcon}>
+              <RequirementIcon />
+              </div>
+              <div className={styles.menuText}>register</div>
+            </div>
+          </Link>
+          <Link
+            to={"/agg"}
+            className={`${styles.navItem}  ${isActive(
+              location.pathname,
+              "/agg"
+            )}`}
+          >
+            {" "}
+            <div className={styles.menuDiv}>
+              <div className={styles.svgIcon}>
+              <RequirementIcon />
               </div>
               <div className={styles.menuText}>register</div>
             </div>
