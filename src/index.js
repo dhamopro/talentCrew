@@ -9,13 +9,10 @@ import Friends from "./pages/Friends/Friends";
 import SignUp from "./pages/Signup/SignUp";
 import Login from "./pages/Login/Login";
 import Component2 from "./pages/Profile/Edit";
-import EditRecord from "./pages/Profile/Edit1";
 import EditRecord2 from "./pages/Profile/Edit2";
 import Registration from "./pages/Registration/Registration";
 import NeedsTable from "./pages/NeedsTable/NeedsTable";
-import TableComponent from "./pages/NeedsTable/RequirementTable";
 import CandidateTable from "./pages/NeedsTable/CandidateTable";
-import AggregateComponent from "./pages/NeedsTable/Aggregate";
 import AggregateComp1 from "./pages/NeedsTable/AgreeComp1";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
