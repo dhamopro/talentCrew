@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState,forwardRef, useMemo } from 'react';
-import PopupExample1 from './AgreeComp2';
 import PopupExample from './PopUpExample';
 import { useTable, usePagination, useGlobalFilter, useFilters, useSortBy } from 'react-table';
 import SearchIcon from '@mui/icons-material/Search';
