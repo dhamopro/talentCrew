@@ -15,7 +15,8 @@ import Registration from "./pages/Registration/Registration";
 import NeedsTable from "./pages/NeedsTable/NeedsTable";
 import TableComponent from "./pages/NeedsTable/RequirementTable";
 import CandidateTable from "./pages/NeedsTable/CandidateTable";
-import AggregateComponent from "./pages/NeedsTable/AllRecords";
+import AggregateComponent from "./pages/NeedsTable/Aggregate";
+import AggregateComp1 from "./pages/NeedsTable/AgreeComp1";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -29,7 +30,7 @@ root.render(
           <Route path='register' element={<Registration />} />
           <Route path='list' element={<CandidateTable />} />
           <Route path='list1' element={<NeedsTable />} />
-          <Route path='agg' element={<AggregateComponent />} />
+          <Route path='agg' element={<AggregateComp1 />} />
 
 
           

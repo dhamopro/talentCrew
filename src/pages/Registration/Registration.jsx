@@ -19,7 +19,7 @@ const configData = require('../../configure.js');
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const Registration = (editId) => {
+const Registration = (selectedCandidate1) => {
   //constants
   const genderOptions = ["Male", "Female", "Transgender", "Others"];
   
@@ -41,7 +41,7 @@ const Registration = (editId) => {
     skills: [{ skillName: "", skillLevel: "", skillRating:"" }],
     employs: [{ company: "", jobType: "", payRoll: "", designation: "", empFrom: "01/01/2024", empTo: "01/01/2024" }],
     education: [{ degree: "", subject: "", institution: "", university: "", cpga: "", passOut:"" }],
-    certs: [{ certName: "", certNo: "", certDate: "" }],
+    certs: [{ certificationName: "", certificationNo: "", certDate: "" }],
     candidateID:"",
     firstName: "",
     middleName: "",
@@ -113,8 +113,8 @@ const Registration = (editId) => {
     ],
     certs: [
       {
-        certName: "Certified React Developer",
-        certNo: "REACT-123456",
+        certificationName: "Certified React Developer",
+        certificationNo: "REACT-123456",
         certDate: "2023-01-03"
       }
     ],
@@ -148,7 +148,7 @@ const Registration = (editId) => {
 
   
 
-  const [candidateId, setCandidateId] = useState('');
+  //const [candidateId, setCandidateId] = useState('');
 
 
   //const [formData, setFormData] = useState(initialFormState);
@@ -192,19 +192,18 @@ const Registration = (editId) => {
 
   useEffect(() => {
 
+    console.info(selectedCandidate1);
     const fetchCandidate = async () => {
       try {
-        console.info(editId);
-        console.info(editId.editId);
+        console.info(selectedCandidate1);
 
         /*if(!editId.editId.trim){
           return;
         }*/
-        setCandidateId(editId.editId);
-        console.info(candidateId);
+        /*console.info(candidateId);
         const selectedCandidate = await pb.collection('Candidate').getOne(editId.editId);
         console.info(selectedCandidate);
-        //setRecord(fetchedRecord);
+        //setRecord(fetchedRecord);*/
 
        /* const record1 = await pb.collection('Candidate').getOne(candidateId, {
           expand: 'skill_set,location, preffered_location, source_type, source_name, preffered_job, current_organisation',
@@ -230,23 +229,13 @@ const Registration = (editId) => {
         record.companies = experience;
         
         const education = await pb.collection('Education').getFirstListItem(`candidate.id="${candidateId}"`);
-        record.education = education
-            
-        console.log('Allowed')
-          //const { name, value } = e.target;
-          setFormData({
-            ...formData,
-            [formData.firstName]: record.first_name
-          });*/
-          console.log(selectedCandidate);
-          console.log(formData.firstName);
-
-          setFormData({firstName: selectedCandidate.first_name, ...formData,});
-          setFormData({middleName: selectedCandidate.middleName, ...formData,});
-          setFormData({lastName: selectedCandidate.lastName, ...formData,});
-
-          console.info(formData);
+        record.education = education;*/       
     
+        console.info(selectedCandidate1);
+
+        let selectedCandidate = selectedCandidate1.selectedCandidate
+
+        
         setFormData({firstName: selectedCandidate.first_name,
           middleName: selectedCandidate.middle_name,
           lastName: selectedCandidate.last_name,
@@ -260,8 +249,11 @@ const Registration = (editId) => {
           expectedCtc: selectedCandidate.expected_ctc,
           noticePeriod: selectedCandidate.notice_period,
           totExp: selectedCandidate.total_exp,
-          relExp: selectedCandidate.relavant_exp,                 
-          ...formData,
+          relExp: selectedCandidate.relavant_exp,
+          education:[],
+          certs:[],
+          employs:[],
+          skills:[],                 
         });
         
         console.log(formData.email);
@@ -509,7 +501,7 @@ const Registration = (editId) => {
       }
     };
 
-    /*fetchPrefJob();
+    fetchPrefJob();
     fetchSkillSet();
     fetchDesignation();
     fetchOrganisation();
@@ -522,9 +514,9 @@ const Registration = (editId) => {
     fetchLocation();
     fetchNoticePeriod();
     fetchSourceName();
-    fetchSourceType();*/
+    fetchSourceType();
     fetchCandidate();
-  }, []); 
+  }, [selectedCandidate1]); 
 
   const [nav, setNav] = useState(0);
 
@@ -659,7 +651,7 @@ const Registration = (editId) => {
       return;
     }
 
-    if (name === "certName" || name === "certNo" || name === "certDate" ) {
+    if (name === "certificationName" || name === "certificationNo" || name === "certDate" ) {
       const updatedCerts = [...formData.certs];
       updatedCerts[count][name] = value;
       console.log("updated company", updatedCerts);
@@ -738,7 +730,7 @@ const Registration = (editId) => {
 
   const addCert = () => {
     const updatedCerts = [...formData.certs];
-    updatedCerts.push({ certName: "", certNo: "", certDate: "" });
+    updatedCerts.push({ certificationName: "", certificationNo: "", certDate: "" });
     setFormData({
       ...formData,
       certs: updatedCerts,
@@ -2705,14 +2697,14 @@ const handlePrefJobChange = (event) => {
                   <input
                     className="form-input"
                     label="Eg. Teaching"
-                    name="certName"
-                    value={certData.certName}
+                    name="certificationName"
+                    value={certData.certificationName}
                     onChange={(event) => {
                       handleChange(event, index);
                     }}
                   ></input>
-                  {errors.certs && errors.certs[index] && errors.certs[index].certName && (
-            <span  style={{ color: 'red' }}>{errors.certs[index].certName}</span>
+                  {errors.certs && errors.certs[index] && errors.certs[index].certificationName && (
+            <span  style={{ color: 'red' }}>{errors.certs[index].certificationName}</span>
           )}
                 </div>
                 <div className="formElement">
@@ -2722,14 +2714,14 @@ const handlePrefJobChange = (event) => {
                   <input
                     className="form-input"
                     label="Eg. Teaching"
-                    name="certNo"
-                    value={certData.certNo}
+                    name="certificationNo"
+                    value={certData.certificationNo}
                     onChange={(event) => {
                       handleChange(event, index);
                     }}
                   ></input>
-                  {errors.certs && errors.certs[index] && errors.certs[index].certNo && (
-            <span  style={{ color: 'red' }}>{errors.certs[index].certNo}</span>
+                  {errors.certs && errors.certs[index] && errors.certs[index].certificationNo && (
+            <span  style={{ color: 'red' }}>{errors.certs[index].certificationNo}</span>
           )}
                 </div></div>
                 <div className="formElement">

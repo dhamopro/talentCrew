@@ -6,7 +6,7 @@ import { isFieldValuePresent } from '../Profile/Util';
 
 
 
-const PopupExample = ({handleEditorCreate}) => {
+const PopupExample = ({handlePopupCallback}) => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [exists, setExists] = useState(false);
@@ -23,12 +23,13 @@ const PopupExample = ({handleEditorCreate}) => {
     };
 
     const handleCreate = () => {
-        alert(`Created Application with Email: ${email}, PAN: ${pan}`);
+        alert(`You are about to create Application`);
+        handlePopupCallback('Create');
         togglePopup();
     };
 
     const handleEdit = (event) => {
-        alert(`Edited Application with Email: ${email}, PAN: ${pan}`);
+        alert(`You are about to Edit Application with Email: ${email}, PAN: ${pan}`);
         setIsEditMode(false);
 
         const { id } = event.target;
@@ -36,10 +37,18 @@ const PopupExample = ({handleEditorCreate}) => {
 
         setCandidateId(id)
         console.info(id);
-        handleEditorCreate(id);
+        //handleEditorCreate(id);
+        handlePopupCallback(id);
+        togglePopup();
         //const history = useNavigate();
         
     };
+
+    const sendValueToAggregateComp = () => {
+        // Simulate sending some data to AggregateComp
+        const value = 'Value from PopupExample';
+        handlePopupCallback(value);
+      };
 
     const handlePANNotAvailable = () => {
         alert(`Edited Application with Email: ${email}, PAN: ${pan}`);
@@ -139,7 +148,7 @@ const PopupExample = ({handleEditorCreate}) => {
                                         result.items.map((education, index) => (
 
                                             <tr key={index} style={{border:1, color:'black',background:'skyblue'}}>
-                                                <td> <button id={education.id} onClick={handleEdit}>{education.id}</button></td>
+                                                <td> <button id={education.id} onClick={handleEdit}>Click to Edit</button></td>
                                                 <td><label>->Email:</label> {education.email}</td>
                                                 <td><label>->PAN Number</label>: {education.pan_number}</td>
                                             </tr>

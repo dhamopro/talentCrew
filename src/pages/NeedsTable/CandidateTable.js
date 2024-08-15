@@ -19,11 +19,12 @@ import { FaSort } from "react-icons/fa"
 import Avatar from '@mui/material/Avatar';
 import PocketBase from 'pocketbase';
 import PopupExample from './PopUpExample.js'
+import AggregateComp1 from './AgreeComp1.js'
 
 
 const configData = require('../../configure.js');
 
-export const CandidateTable = ({handleSelectedCand}) => {
+ const CandidateTable = ({handlePopupValue}) => {
  // const dispatch = useDispatch()
 
   //get userId
@@ -36,6 +37,8 @@ export const CandidateTable = ({handleSelectedCand}) => {
   const needTypes = [] //useSelector((state)=> state.needtype.data.content)
   const [needTypeId, setNeedTypeId] = useState('');
   const [candId, setCandId] = useState('');
+  const [mode, setMode] = useState('');
+
   const handleNeedTypeFilter = e => {
     setNeedTypeId(e.target.value)
   }
@@ -50,14 +53,22 @@ export const CandidateTable = ({handleSelectedCand}) => {
     }
   },[needTypeId, needList])*/
 
-  
-
   const handleEditorCreate = (id) => {
     console.info(id);
     setCandId(id);
-    handleSelectedCand(id);
+    //handleSelectedCand(id);
   };
 
+  const handlePopupCallback = (value) => {
+    handlePopupValue();
+  };
+
+  const handleMode = (value) => {
+    console.info(value);
+    setMode(value);
+    
+  };
+  
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -290,7 +301,8 @@ export const CandidateTable = ({handleSelectedCand}) => {
             <label>Requirement</label>
           </div>
           
-          <PopupExample handleEditorCreate={handleEditorCreate} />
+          {/*<PopupExample handlePopupCallback={handlePopupCallback} />*/}
+          {/*<AggregateComp1 handleMode={handleMode} />*/}
           
         </div>
         {/*Filters*/}
