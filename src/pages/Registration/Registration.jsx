@@ -183,10 +183,21 @@ const Registration = (selectedCandidate1) => {
   const [sourceName, setSourceName] = useState([]);
 
   
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(
+    {
+      'employs':[{}],
+      'education': [{}],
+      'certs':[{}],
+      'skills':[{}]
+    }
+  );
 
 
-  
+  /*validateAllRows('education');
+  validateAllRows('employs');
+  validateAllRows('certs');
+  validateAllRows('skills');*/
+
   const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
 
 
@@ -543,9 +554,12 @@ const Registration = (selectedCandidate1) => {
     formData[section].forEach((item, index) => {
       console.info(section);
       Object.keys(item).forEach((key) => {
+        console.info(key);
+        console.info(item[key]);
         if (!isValidInput(key, item[key])) {
           allValid = false;
           updatedErrors[section] = updatedErrors[section] || [];
+          console.log(updatedErrors[section][index]);
           updatedErrors[section][index] = { ...updatedErrors[section][index], [key]: `Invalid value for ${key}` };
         }
       });
@@ -857,13 +871,15 @@ const Registration = (selectedCandidate1) => {
 
     event.preventDefault();
 
-    /*handleUANChange(event);
+    handleUANChange(event);
     handlePANChange(event);
     handleNameChange(event);
+    handleLastNameChange(event);
+    handleDOBChange(event);
     handlePhoneChange(event);
     handleAltPhoneChange(event);
     handleEmailChange(event);
-    handleAltEmailChange(event);*/
+    handleAltEmailChange(event);
     handleTotExpChange(event);
     handleRelExpChange(event);
     handleCurrCTCChange(event);
@@ -1038,6 +1054,25 @@ const Registration = (selectedCandidate1) => {
       errors[name]=null;
     };
 
+    const handleLastNameChange = (event) => {
+      if (!formData.lastName.trim()) {
+        errors.lastName = 'Last name is required';
+      } else if (!/^[A-Z]/.test(formData.lastName)) {
+        errors.lastName = 'First name should start with a capital letter';  
+      }
+      const newValue = event.target.value;
+      const capitalizedValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+  
+      const { name, value } = event.target;
+  
+      setFormData({
+        ...formData,
+        [name]: capitalizedValue
+      });
+    
+        errors[name]=null;
+      };
+
 
     const handlePhoneChange = (event) => {
       if (!formData.phone.trim()) {
@@ -1145,6 +1180,7 @@ const Registration = (selectedCandidate1) => {
       });
 
     };
+
 
     const handleTotExpChange = (event) => {
 
@@ -1461,7 +1497,7 @@ const handlePrefJobChange = (event) => {
                   placeholder="Enter your last name"
                   name="lastName"
                   value={formData.lastName ? formData.lastName : ""}
-                  onChange={handleNameChange}
+                  onChange={handleLastNameChange}
                   style={{ borderColor: errors.lastName ? 'red' : '' }}
                 ></input>
                 {errors.lastName && <span style={{ color: 'red' }}>{errors.lastName}</span>}
