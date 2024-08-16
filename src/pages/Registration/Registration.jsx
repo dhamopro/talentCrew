@@ -37,6 +37,10 @@ const Registration = (selectedCandidate1) => {
     padding: "0 8px",
   };
 
+
+   
+   
+
    const initFormData = {
     skills: [{ skillName: "", skillLevel: "", skillRating:"" }],
     employs: [{ company: "", jobType: "", payRoll: "", designation: "", empFrom: "01/01/2024", empTo: "01/01/2024" }],
@@ -84,6 +88,7 @@ const Registration = (selectedCandidate1) => {
     consent: false,
     skillSet:[],
     validate:"",
+    createdDate:"",
   };
 
   const initialFormState = {
@@ -152,6 +157,10 @@ const Registration = (selectedCandidate1) => {
 
 
   //const [formData, setFormData] = useState(initialFormState);
+
+  const today = new Date();
+  const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+
   const [formData, setFormData] = useState(initFormData);
 
   const [skillSet, setSkillSet] = useState([]);
@@ -199,6 +208,8 @@ const Registration = (selectedCandidate1) => {
   validateAllRows('skills');*/
 
   const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
+
+
 
 
   useEffect(() => {
@@ -527,6 +538,12 @@ const Registration = (selectedCandidate1) => {
     fetchSourceName();
     fetchSourceType();
     fetchCandidate();
+
+    setFormData({
+      ...formData,
+      createdDate: formattedDate,
+    });
+
   }, [selectedCandidate1]); 
 
   const [nav, setNav] = useState(0);
@@ -1454,10 +1471,9 @@ const handlePrefJobChange = (event) => {
                 <br />
                 <input
                   className="form-input"
-                  placeholder="Enter your last name"
-                  name="lastName"
-                  value={formData.landmark ? formData.lastName : ""}
-                  onChange={handleChange}
+                  type='date'
+                  name="createdDate"
+                  disabled
                 ></input>
               </div>
               
