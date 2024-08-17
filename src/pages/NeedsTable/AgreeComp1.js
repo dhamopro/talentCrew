@@ -34,8 +34,11 @@ const doNothingFor2Seconds = async () => {
     setEditId(valueFromPopup);
     //handleMode('Edit');
 
-    const selectedCandidate = await pb.collection('Candidate').getOne(valueFromPopup);
+    const selectedCandidate = await pb.collection('Candidate').getOne(valueFromPopup,{
+      expand: 'notice_period, skill_set,location, preffered_location, source_type, source_name, preffered_job, current_organisation',
+    });
     console.info(selectedCandidate);
+    console.info(selectedCandidate.expand.location);
 
    
 
@@ -86,7 +89,10 @@ const doNothingFor2Seconds = async () => {
         uanNo: selectedCandidate.uan_number,
         candidateID: selectedCandidate.id,
         createdDate: selectedCandidate.created,
+        prefJob: selectedCandidate.PreferredJob,
 
+        noticePeriod: selectedCandidate.notice_period,
+        currLoc:selectedCandidate.expand.location,
         education:eduData,
         certs:certData,
         employs:expData,
@@ -155,14 +161,14 @@ const doNothingFor2Seconds = async () => {
 
   const popupExampleRef = useRef(null);
 
-  useEffect(() => {
+ /* useEffect(() => {
     // Call the child component's method after the parent has rendered
     if (popupExampleRef.current) {
       popupExampleRef.current.togglePopup();
       console.info(157);
     }
     
-  }, []); 
+  }, []); */
 
   return (
     <div>

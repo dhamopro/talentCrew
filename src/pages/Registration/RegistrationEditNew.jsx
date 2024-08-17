@@ -75,7 +75,7 @@ const RegistrationEditNew = (selectedCandidate) => {
     prefDays: [],
     prefTime: [],
     interests: [],
-    prefJob:[],
+    prefJob:[{'name':'QA','id':'QA'}],
     qualification: "",
     affiliation: "",
     empStatus: "",
@@ -138,7 +138,7 @@ const RegistrationEditNew = (selectedCandidate) => {
     //currLoc: "Chennai",
     prefLoc: ["San Francisco", "Seattle"],
     //noticePeriod: "30 days",
-    //prefJob: ["Software Developer", "Front-end Developer"],
+    prefJob: [{'id':3,'name':'FullTime'}],
     consent: true,
     resumeDoc:'',
     imageDoc:'',
@@ -179,9 +179,23 @@ const RegistrationEditNew = (selectedCandidate) => {
       panNo:selectedCandidate.selectedCandidate.panNo,
       uanNo: selectedCandidate.selectedCandidate.uanNo,          
       candidateID: selectedCandidate.selectedCandidate.candidateID,  
-      createdDate: selectedCandidate.selectedCandidate.createdDate,         
-
+      createdDate: selectedCandidate.selectedCandidate.createdDate, 
+      //prefJob: PrefJob.find(option => option.name === 'IN/KL/KC') || "",        
+      prefJob: PrefJob.find(option => option.name === selectedCandidate.selectedCandidate.prefJob) || "[]",
+      noticePeriod: noticePeriod.find(option => option.name === selectedCandidate.selectedCandidate.noticePeriod) || "[]",   
+      currLoc:  selectedCandidate.selectedCandidate.currLoc,
     });
+
+    console.log(selectedCandidate.selectedCandidate.prefJob);
+    console.log(selectedCandidate.selectedCandidate.noticePeriod);
+    console.log(PrefJob);
+    console.log('prefJob' in formData);
+    console.log(formData.prefJob); 
+    console.log(formData.noticePeriod); 
+    //console.log(PrefJob.find(option => option.name === selectedCandidate.selectedCandidate.prefJob));
+   // console.log(PrefJob.find(option => option.name === selectedCandidate.selectedCandidate.noticePeriod));
+   // console.log(location.find(option => option.name === selectedCandidate.selectedCandidate.currLoc));
+   // console.log(location.filter(option => ['IN/KL/KC', 'IN/TN/CH'].includes(option.name)));
 
     console.log(formData); 
 
@@ -869,7 +883,7 @@ const RegistrationEditNew = (selectedCandidate) => {
                 />
                 {errors.currLoc && <span style={{ color: 'red' }}>{errors.currLoc}</span>}
               </div>
-              {/*<div className="formElement">
+              <div className="formElement">
                 <label>Preferred Location</label>
                 <br />
                 <Autocomplete
@@ -879,7 +893,7 @@ const RegistrationEditNew = (selectedCandidate) => {
                   disableCloseOnSelect
                   getOptionLabel={(option) => option.name}
                   ChipProps={{ style: chipStyle }}
-                  value={formData.prefLoc ? formData.prefLoc : ""}
+                 // value={formData.prefLoc ? formData.prefLoc : ""}
                   onChange={(event, value) =>
                     handleAutoCompleteChange("prefLoc", value)
                   }
@@ -903,7 +917,7 @@ const RegistrationEditNew = (selectedCandidate) => {
                   )}
                 />
                 {errors.prefLoc && <span style={{ color: 'red' }}>{errors.prefLoc}</span>}
-              </div>*/}
+              </div>
               <div className="formElement">
                 <label>Notice Period</label>
                 <br />
