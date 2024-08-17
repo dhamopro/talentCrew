@@ -182,20 +182,30 @@ const RegistrationEditNew = (selectedCandidate) => {
       createdDate: selectedCandidate.selectedCandidate.createdDate, 
       //prefJob: PrefJob.find(option => option.name === 'IN/KL/KC') || "",        
       prefJob: PrefJob.find(option => option.name === selectedCandidate.selectedCandidate.prefJob) || "[]",
-      noticePeriod: noticePeriod.find(option => option.name === selectedCandidate.selectedCandidate.noticePeriod) || "[]",   
+      noticePeriod: noticePeriod.find(option => option.name === selectedCandidate.selectedCandidate.noticePeriod) || "",   
       currLoc:  selectedCandidate.selectedCandidate.currLoc,
+      prefLoc:  location.filter(option => 
+        selectedCandidate.selectedCandidate.prefLoc.includes(option.name)
+      ),
     });
 
     console.log(selectedCandidate.selectedCandidate.prefJob);
     console.log(selectedCandidate.selectedCandidate.noticePeriod);
     console.log(PrefJob);
-    console.log('prefJob' in formData);
-    console.log(formData.prefJob); 
-    console.log(formData.noticePeriod); 
-    //console.log(PrefJob.find(option => option.name === selectedCandidate.selectedCandidate.prefJob));
-   // console.log(PrefJob.find(option => option.name === selectedCandidate.selectedCandidate.noticePeriod));
-   // console.log(location.find(option => option.name === selectedCandidate.selectedCandidate.currLoc));
+    console.log(noticePeriod);
+
+    console.log(PrefJob.find(option => option.name === selectedCandidate.selectedCandidate.prefJob));
+    console.log(noticePeriod.find(option => option.name === selectedCandidate.selectedCandidate.noticePeriod));
+    console.log(location.find(option => option.name === selectedCandidate.selectedCandidate.currLoc));
+    console.log(location.find(option => option.name === selectedCandidate.selectedCandidate.prefLoc));
+    console.log(location.filter(option => 
+      selectedCandidate.selectedCandidate.prefLoc.includes(option.name)
+    ));
    // console.log(location.filter(option => ['IN/KL/KC', 'IN/TN/CH'].includes(option.name)));
+
+   console.log('prefJob' in formData);
+   console.log(formData.prefJob); 
+   console.log(formData.noticePeriod);
 
     console.log(formData); 
 

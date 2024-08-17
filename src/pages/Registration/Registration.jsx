@@ -64,7 +64,57 @@ const Registration = (selectedCandidate1) => {
     currCTC:"",
     expCTC:"",
     currLoc:"",
-    prefLoc:[],
+    prefLoc:[], 
+    noticePeriod:"",
+    nationality: "",
+    mobileNumber: "",
+    email: "",
+    address: "",
+    city: "",
+    district: "",
+    state: "",
+    landmark: "",
+    pincode: "",
+    languages: [],
+    prefDays: [],
+    prefTime: [],
+    interests: [],
+    prefJob:[],
+    qualification: "",
+    affiliation: "",
+    empStatus: "",
+    yoe: "",
+    reference: "",
+    consent: false,
+    skillSet:[],
+    validate:"",
+    createdDate:"",
+  };
+
+  const initFormData1 = {
+    skills: [{ skillName: "", skillLevel: "", skillRating:"" }],
+    employs: [{ company: "", jobType: "", payRoll: "", designation: "", empFrom: "01/01/2024", empTo: "01/01/2024" }],
+    education: [{ degree: "", subject: "", institution: "", university: "", cpga: "", passOut:"" }],
+    certs: [{ certificationName: "", certificationNo: "", certDate: "" }],
+    candidateID:"",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    displayName: "",
+    phone:"",
+    altPhone:"",
+    email:"",
+    altEmail:"",
+    dob: "",
+    gender: "",
+    panNo:"",
+    uanNo:"",
+    totExp:"",
+    relExp:"",
+    currCTC:"",
+    expCTC:"",
+    currLoc:"{'name':'IN/KL/KC', 'id':8}",
+    prefLoc:['IN/KL/KC'],
     noticePeriod:"",
     nationality: "",
     mobileNumber: "",
@@ -1722,7 +1772,7 @@ const handlePrefJobChange = (event) => {
                   id="checkboxes-tags"
                   options={location}
                   disableCloseOnSelect
-                  getOptionLabel={(option) => option.name}
+                  getOptionLabel={(option) => option?.name || ''}
                   ChipProps={{ style: chipStyle }}
                   value={formData.currLoc ? formData.currLoc : []}
                   onChange={(event, value) =>
@@ -1757,7 +1807,7 @@ const handlePrefJobChange = (event) => {
                   id="checkboxes-tags"
                   options={location}
                   disableCloseOnSelect
-                  getOptionLabel={(option) => option.name}
+                  getOptionLabel={(option) => option?.name ||""}
                   ChipProps={{ style: chipStyle }}
                   value={formData.prefLoc ? formData.prefLoc : ""}
                   onChange={(event, value) =>
@@ -1791,7 +1841,7 @@ const handlePrefJobChange = (event) => {
                   id="checkboxes-tags"
                   options={noticePeriod}
                   disableCloseOnSelect
-                  getOptionLabel={(option) => option.name}
+                  getOptionLabel={(option) => option?.name ||''}
                   ChipProps={{ style: chipStyle }}
                   value={formData.noticePeriod ? formData.noticePeriod : ""}
                   onChange={(event, value) =>
@@ -1825,7 +1875,7 @@ const handlePrefJobChange = (event) => {
                   id="checkboxes-tags"
                   options={PrefJob}
                   disableCloseOnSelect
-                  getOptionLabel={(option) => option.name}
+                  getOptionLabel={(option) => option?.name||''}
                   ChipProps={{ style: chipStyle }}
                   value={formData.prefJob ? formData.prefJob : ""}
                   onChange={(event, value) =>
