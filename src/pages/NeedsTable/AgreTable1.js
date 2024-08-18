@@ -46,6 +46,51 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue}) => {
     };
 
     fetchRecords();
+
+
+    const fetchAllCandidatesAndSkills = async () => {
+      try {
+        const pb = new PocketBase('https://pb.talentcrew.tekishub.com');
+        
+        // Fetch all candidates
+        const candidatesResult = await pb.collection('Candidate').getList(1, 50, {
+          sort: '-created',
+        });
+
+        // Fetch skills for all candidates
+        const candidatesWithSkills = await Promise.all(
+          candidatesResult.items.map(async (candidate) => {
+            const skillsResult = await pb.collection('CandidateSkilsets').getList(1,50,{
+              //filter: `candidate="${candidate.id}"`,
+              filter: `candidate="ozsb7i4egwe45nq"`,
+              
+             // expand: 'skill_details' // Assuming there's a relation to a skill details collection
+            });
+            return { ...candidate, skills: skillsResult.items };
+            console.log(candidate);
+          })
+        );
+
+        //setCandidates(candidatesWithSkills);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    //fetchAllCandidatesAndSkills();
+
+
+  }, []);
+
+
+  const [candidates, setCandidates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    
   }, []);
 
   const data =useMemo(() => filteredData,[filteredData, needList])
@@ -89,6 +134,7 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue}) => {
     setPageSize,
     prepareRow,
     setFilter,
+    setAllFilters,
     } = useTable ({
     columns,
     data
@@ -103,6 +149,10 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue}) => {
     setRowData(rowData);
     setShowPopup(!showPopup);
   };
+
+  const clearAllFilters = () => {
+    setAllFilters([]);  // Clears all filters by setting an empty array
+};
 
   return (
     <div>
@@ -156,7 +206,7 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue}) => {
             <input type="date" name="selectedDate" value={selectedDate} onChange={handleDateChange} />
           </div>
           */}
-  
+          <button onClick={clearAllFilters}>Clear All Filters</button>
         </div>
       </div>
 
@@ -186,6 +236,7 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue}) => {
                 
             ))}
         </thead>
+        
         <tbody {...getTableBodyProps()}>
             {page.map((row) => {
                 prepareRow(row)
