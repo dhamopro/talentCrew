@@ -8,9 +8,11 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { FaSort } from "react-icons/fa"
 import PocketBase from 'pocketbase';
+import TextColumnFilter from './TextFilter'; // Import the TextColumnFilter
+
 import Avatar from '@mui/material/Avatar';
 
-const CandidateTable1 = ({ handleSelectedCand, handlePopupValue},popUpRef) => {
+const CandidateTable1 = ({ handleSelectedCand, handlePopupValue}) => {
   const handleEditorCreate = (editorData) => {
     console.log('Editor Data in CandidateTable:', editorData);
   };
@@ -53,17 +55,17 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue},popUpRef) => {
 
 
   const COLUMNS = [
-    { Header: 'First Name', accessor: 'first_name', width: 250 },
-    { Header: 'Last Name', accessor: 'last_name'  },
-    { Header: 'Phone', accessor: 'phone'},
-    { Header: 'Email', accessor: 'email' }, 
-    { Header: 'Curr.CTC', accessor: 'current_ctc' }, 
-    { Header: 'Exp.CTC', accessor: 'expected_ctc' }, 
-    { Header: 'NoticePeriod', accessor: 'notice_period' },
-    { Header: 'Rel.Exp', accessor: 'rel_exp' }, 
-    { Header: 'Preferred Job', accessor: 'preffered_job' },
+    {  id: 'first_name', Header: 'First Name', accessor: 'first_name', width: 250 ,canFilter: true, Filter: TextColumnFilter },
+    {  id: 'last_name', Header: 'Last Name', accessor: 'last_name' ,canFilter: true,  Filter: TextColumnFilter },
+    {  id: 'phone', Header: 'Phone', accessor: 'phone',canFilter: false, Filter: TextColumnFilter },
+    {  id: 'email', Header: 'Email', accessor: 'email',canFilter: true, Filter: TextColumnFilter  }, 
+    {  id: 'current_ctc', Header: 'Curr.CTC', accessor: 'current_ctc',canFilter: false,  Filter: TextColumnFilter  }, 
+    {  id: 'expected_ctc', Header: 'Exp.CTC', accessor: 'expected_ctc',canFilter: false, Filter: TextColumnFilter  }, 
+    {  id: 'notice_period', Header: 'NoticePeriod', accessor: 'notice_period',canFilter: false, Filter: TextColumnFilter  },
+    {  id: 'rel_exp', Header: 'Rel.Exp', accessor: 'rel_exp',canFilter: false, Filter: TextColumnFilter }, 
+    {  id: 'preffered_job', Header: 'Preferred Job', accessor: 'preffered_job',canFilter: false, Filter: TextColumnFilter  },
     
-    { Header: 'Created', accessor: 'created'}
+    { id: 'date', Header: 'Created', accessor: 'created',canFilter: false, Filter: TextColumnFilter }
 
   ]
   const columns = useMemo(() => COLUMNS, []);
@@ -136,7 +138,7 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue},popUpRef) => {
             <span> </span>
             <label>Requirement</label>
           </div>
-          <PopupExample handlePopupCallback={handlePopupCallback} ref={popUpRef}/>
+          <PopupExample handlePopupCallback={handlePopupCallback}/>
 
           {/*<PopupExample handlePopupCallback={handlePopupCallback} />*/}
           {/*<AggregateComp1 handleMode={handleMode} />*/}
@@ -162,6 +164,7 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue},popUpRef) => {
       <table className="tableNeedList">
         <thead>
             {headerGroups.map((headerGroup)=>(
+              <React.Fragment key={headerGroup.id}>
                 <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map((column)=>(
                         <th {...column.getHeaderProps(column.getSortByToggleProps())}>
@@ -172,6 +175,15 @@ const CandidateTable1 = ({ handleSelectedCand, handlePopupValue},popUpRef) => {
                         </th>
                     ))}
                 </tr>
+                <tr>
+                {headerGroup.headers.map((column) => (
+                    <th key={`${column.id}-filter`}>
+                        {column.canFilter ? column.render('Filter') : null}
+                    </th>
+                ))}
+            </tr>
+            </React.Fragment>
+                
             ))}
         </thead>
         <tbody {...getTableBodyProps()}>

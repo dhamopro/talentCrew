@@ -69,11 +69,13 @@ const PopupExample = ({handlePopupCallback}) => {
 
             setResult(res);
             console.info(result);
+            setExists('valid');
         }
         else {
             let res = await isFieldValuePresent('candidate', 'email', email, true, ['id', 'email', 'pan_number']);
             console.info(res);
             setResult(res);
+            setExists('valid');
 
             // setExists(await isFieldValuePresent('candidate','email',email));
             //setResult(isFieldValuePresent('candidate', 'pan_number', pan, true, ['id', 'email', 'pan_number']));
@@ -128,7 +130,7 @@ const PopupExample = ({handlePopupCallback}) => {
                                     onClick={handleCheck}
                                 >
                                     &#10003;
-                                </span>
+                                </span>(Click to Check Existence)
                             </div>
 
 
@@ -148,9 +150,10 @@ const PopupExample = ({handlePopupCallback}) => {
                                         result.items.map((education, index) => (
 
                                             <tr key={index} style={{border:1, color:'black',background:'skyblue'}}>
-                                                <td> <button id={education.id} onClick={handleEdit}>Click to Edit</button></td>
-                                                <td><label>->Email:</label> {education.email}</td>
-                                                <td><label>->PAN Number</label>: {education.pan_number}</td>
+                                                <td style={{ width: '20%',padding: '10px' }}> <div className="button-group"> <button type='button' id={education.id} onClick={handleEdit}>Click to Edit</button> </div></td>
+                                                <td style={{ width: '50%' }}><label>{education.email}</label> </td>
+                                                <td  style={{ width: '20%' }}><label>PAN</label>: {education.pan_number}</td>
+                                                <td style={{ width: '20%',padding: '10px' }}> <div className="button-group"> <button type='button' id={education.id} onClick={handleEdit}>Send</button> </div></td>
                                             </tr>
                                         ))
                                     ) : (
@@ -159,11 +162,11 @@ const PopupExample = ({handlePopupCallback}) => {
                                 </div>
 
                             <div className="button-group">
-                                <button type="button" onClick={handleEdit}>Edit</button>
+                                {/*<button type="button" onClick={handleEdit}>Edit</button>*/}
                                 <button type="button" onClick={handleCreate}>Create</button>
-                                <button type="button" onClick={handleSendApplication}>
+                                {/*<button type="button" onClick={handleSendApplication}>
                                     Send Application to User
-                                </button>
+                                </button>*/}
 
 
 

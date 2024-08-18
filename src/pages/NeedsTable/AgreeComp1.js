@@ -93,6 +93,7 @@ const doNothingFor2Seconds = async () => {
 
         noticePeriod: selectedCandidate.notice_period,
         currLoc:selectedCandidate.expand.location,
+        prefLoc: selectedCandidate.expand.preffered_location,
         education:eduData,
         certs:certData,
         employs:expData,
